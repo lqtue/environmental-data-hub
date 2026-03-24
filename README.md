@@ -16,9 +16,17 @@ Central index for all environmental and disaster data projects across the Spotli
 
 | Repo | Description | Data source | Status |
 |---|---|---|---|
-| *(not yet on GitHub)* 2025Typhoon | Real-time typhoon dashboard + historical landfall analysis | JTWC, JMA, IBTrACS (NOAA), NASA POWER | Active — GitHub Actions runs every 6h during storm season |
+| [lqtue/environmental-data-hub](https://github.com/lqtue/environmental-data-hub) | Real-time typhoon dashboard + historical landfall analysis | JTWC, JMA, IBTrACS (NOAA), NASA POWER | Active — GitHub Actions runs every 6h during storm season |
 
-**Scripts available:** `jtwc_fetch.py` (auto-fetch from JTWC/JMA), `kmz_to_geojson.py` (manual KMZ conversion), `process_landfall.py` (IBTrACS historical analysis), `fetch_rain.py` (NASA POWER rainfall anomaly)
+**Scripts available:** `typhoon/` module contains all processing scripts. Colab wrapper at `notebooks/typhoon_analysis.ipynb`.
+
+### Crawlers (Unified)
+
+| Repo | Description | Data source | Status |
+|---|---|---|---|
+| [lqtue/environmental-data-hub](https://github.com/lqtue/environmental-data-hub) | Consolidated Python crawlers for lake water, river levels, and landslide warnings | VNDMS, Thuy Loi Vietnam, NCHMF | Active |
+
+**Scripts available:** `crawlers/` module contains `lake_water.py`, `river_water.py`, and `landslide.py`. Colab API wrapper at `notebooks/crawlers.ipynb`.
 
 ### Water Levels & Reservoirs
 
@@ -57,11 +65,11 @@ Central index for all environmental and disaster data projects across the Spotli
     JTWC/JMA    VNDMS     Thuy Loi     NCHMF     GEOI / VegaCosmos
     (typhoon)   (rivers)  (lakes)   (warnings)   (AQ / flood extent)
         │          │           │           │              │
-        ▼          └─────┬─────┘           │              │
-  2025Typhoon        WaterDashboard        │              │
-  jtwc_fetch.py      water_export_cli.py   │              │
-  kmz_to_geojson.py                        │              │
-        │                │                 │              │
+        ▼          └─────┬─────┴───────────┘              │
+  environmental-data-hub │                                │
+  typhoon/         crawlers/                              │
+  notebooks/       notebooks/                             │
+        │                │                                │
         │                │          ┌──────┘       ┌──────┘
         │                │          ▼              ▼
         │                │    CentralVN.      HanoiAQ
@@ -103,10 +111,7 @@ Central index for all environmental and disaster data projects across the Spotli
 
 ## Known cross-cutting issues
 
-- **Data is fragmented across repos.** Each project maintains its own crawlers, CSVs, and GeoJSON files. There is no shared query interface.
-- **CSV storage grows unboundedly** in WaterDashboard and CentralVN.Landslide. Consider pruning at the start of each season.
 - **Two GitHub accounts** (`vnexpress-spotlight` and `spotlightvne`) — historical split. Environmental projects exist on both.
-- **Typhoon dashboard is not yet on GitHub.** The 2025Typhoon scripts and data exist only locally.
 - **No automated correlation** between typhoon position, water levels, and flood warnings — cross-referencing requires manual work.
 
 ---

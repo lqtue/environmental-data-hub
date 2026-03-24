@@ -1,0 +1,17 @@
+# Large raw data
+data/*.json
+data/*_long.csv
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
