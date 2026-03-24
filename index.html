@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trung tâm Dữ liệu Môi trường — Bàn giao cho VnExpress Spotlight</title>
+<style>
+  :root {
+    --accent: #1a6b4a;
+    --accent-light: #e8f5ee;
+    --bg: #ffffff;
+    --text: #1a1a2e;
+    --muted: #5a5a7a;
+    --border: #d4d4e0;
+    --code-bg: #f4f4f8;
+    --warn: #c0392b;
+    --warn-bg: #fdf0ef;
+    --info: #2471a3;
+    --info-bg: #eaf2f8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--text);
+    background: #f0f0f5;
+    line-height: 1.65;
+    font-size: 15px;
+  }
+  /* --- NAV SIDEBAR --- */
+  nav {
+    position: fixed; top: 0; left: 0;
+    width: 280px; height: 100vh;
+    background: var(--text);
+    color: #ccc;
+    overflow-y: auto;
+    padding: 24px 16px;
+    z-index: 100;
+    transition: transform .3s;
+  }
+  nav .logo { color: #fff; font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  nav .subtitle { font-size: 12px; color: #8a8aaa; margin-bottom: 24px; display: block; }
+  nav a {
+    display: block; color: #b0b0cc; text-decoration: none;
+    padding: 6px 12px; border-radius: 6px; font-size: 13px;
+    margin-bottom: 2px; transition: all .15s;
+  }
+  nav a:hover, nav a.active { background: rgba(255,255,255,.08); color: #fff; }
+  nav a.sub { padding-left: 28px; font-size: 12.5px; color: #888; }
+  nav .section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: #666; margin: 18px 0 6px 12px; }
+  nav .print-btn {
+    display: block; margin-top: 20px; padding: 10px;
+    background: var(--accent); color: #fff; border: none;
+    border-radius: 8px; cursor: pointer; font-size: 13px;
+    text-align: center; width: 100%; font-weight: 600;
+  }
+  nav .print-btn:hover { opacity: .85; }
+  /* --- MAIN --- */
+  main {
+    margin-left: 280px;
+    max-width: 900px;
+    padding: 40px 48px 80px;
+    background: var(--bg);
+    min-height: 100vh;
+  }
+  /* --- TOGGLE NAV (mobile) --- */
+  .nav-toggle {
+    display: none; position: fixed; top: 12px; left: 12px;
+    z-index: 200; background: var(--text); color: #fff;
+    border: none; border-radius: 8px; padding: 8px 14px;
+    cursor: pointer; font-size: 18px;
+  }
+  @media (max-width: 960px) {
+    nav { transform: translateX(-100%); }
+    nav.open { transform: translateX(0); }
+    .nav-toggle { display: block; }
+    main { margin-left: 0; padding: 40px 20px 80px; }
+  }
+
+  /* --- TYPOGRAPHY --- */
+  h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; color: var(--accent); }
+  .header-meta { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+  h2 {
+    font-size: 22px; font-weight: 700; margin: 48px 0 16px;
+    padding-bottom: 8px; border-bottom: 2px solid var(--accent);
+    color: var(--text);
+  }
+  h3 { font-size: 17px; font-weight: 600; margin: 28px 0 10px; color: var(--text); }
+  h4 { font-size: 15px; font-weight: 600; margin: 20px 0 8px; color: var(--muted); }
+  p { margin-bottom: 12px; }
+  ul, ol { margin: 0 0 12px 24px; }
+  li { margin-bottom: 4px; }
+
+  /* --- TABLES --- */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13.5px; }
+  th { background: var(--accent-light); color: var(--accent); text-align: left; font-weight: 600; }
+  th, td { padding: 8px 12px; border: 1px solid var(--border); }
+  tr:nth-child(even) td { background: #fafafe; }
+
+  /* --- CODE --- */
+  code { background: var(--code-bg); padding: 2px 6px; border-radius: 4px; font-size: 13px; font-family: 'SF Mono', 'Fira Code', monospace; }
+  pre { background: var(--code-bg); padding: 16px; border-radius: 8px; overflow-x: auto; margin: 12px 0 20px; font-size: 13px; line-height: 1.5; font-family: 'SF Mono', 'Fira Code', monospace; }
+
+  /* --- CARDS --- */
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 16px 0; }
+  .card.warn { border-left: 4px solid var(--warn); background: var(--warn-bg); }
+  .card.info { border-left: 4px solid var(--info); background: var(--info-bg); }
+  .card.accent { border-left: 4px solid var(--accent); background: var(--accent-light); }
+  .card-title { font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+
+  /* --- STATUS BADGES --- */
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+  .badge.active { background: #d4edda; color: #155724; }
+  .badge.pending { background: #fff3cd; color: #856404; }
+  .badge.archive { background: #e2e3e5; color: #383d41; }
+  .badge.missing { background: #f8d7da; color: #721c24; }
+
+  /* --- FLOW DIAGRAM --- */
+  .flow { background: var(--code-bg); padding: 20px; border-radius: 10px; overflow-x: auto; margin: 16px 0; font-family: 'SF Mono', monospace; font-size: 12.5px; white-space: pre; line-height: 1.6; }
+
+  /* --- COLLAPSIBLE --- */
+  details { margin: 12px 0; }
+  summary { cursor: pointer; font-weight: 600; font-size: 15px; padding: 10px 14px; background: var(--code-bg); border-radius: 8px; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: '+ '; color: var(--accent); font-weight: 800; }
+  details[open] summary::before { content: '- '; }
+  details[open] summary { border-radius: 8px 8px 0 0; }
+  details .detail-body { padding: 16px; border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; }
+
+  /* --- LINKS --- */
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .repo-link { font-weight: 600; }
+
+  /* --- PRINT --- */
+  @media print {
+    nav, .nav-toggle, .no-print { display: none !important; }
+    main { margin-left: 0; max-width: 100%; padding: 20px; }
+    body { background: #fff; font-size: 11pt; }
+    h1 { font-size: 22pt; }
+    h2 { font-size: 16pt; break-before: page; }
+    h3 { font-size: 13pt; }
+    table { font-size: 9pt; }
+    pre { font-size: 9pt; }
+    .card { break-inside: avoid; }
+    details { open: true; }
+    details[open] { break-inside: avoid; }
+    .flow { font-size: 9pt; }
+  }
+
+  /* --- TABS --- */
+  .tabs { display: flex; gap: 0; margin: 16px 0 0; border-bottom: 2px solid var(--border); }
+  .tab-btn { padding: 8px 20px; border: none; background: none; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -2px; }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-panel { display: none; padding: 16px 0; }
+  .tab-panel.active { display: block; }
+
+  /* Separator */
+  hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('nav').classList.toggle('open')">&#9776;</button>
+
+<nav>
+  <div class="logo">TT Dữ liệu Môi trường</div>
+  <span class="subtitle">VnExpress Spotlight — Bàn giao</span>
+
+  <div class="section-label">Tổng quan</div>
+  <a href="#overview">Tổng quan Dự án</a>
+  <a href="#repos">Sơ đồ Kho lưu trữ</a>
+  <a href="#dataflow">Kiến trúc Luồng Dữ liệu</a>
+  <a href="#sources">Tham chiếu Nguồn Dữ liệu</a>
+
+  <div class="section-label">Hướng dẫn Kỹ thuật</div>
+  <a href="#typhoon">Theo dõi Bão</a>
+  <a href="#typhoon-jtwc" class="sub">Nguồn JTWC</a>
+  <a href="#typhoon-jma" class="sub">Dự phòng JMA</a>
+  <a href="#typhoon-scripts" class="sub">Các Script</a>
+  <a href="#water">Mực Nước</a>
+  <a href="#water-vndms" class="sub">API VNDMS</a>
+  <a href="#water-stations" class="sub">Các Trạm</a>
+  <a href="#lakes">Hồ chứa</a>
+  <a href="#lakes-api" class="sub">API Thủy lợi</a>
+  <a href="#flood-warning">Cảnh báo Lũ quét & Sạt lở</a>
+  <a href="#flood-nchmf" class="sub">API NCHMF</a>
+  <a href="#flood-mapping">Bản đồ Ngập lụt</a>
+  <a href="#rainfall">Dị thường Lượng mưa</a>
+
+  <div class="section-label">Vận hành</div>
+  <a href="#workflow">Quy trình thông thường</a>
+  <a href="#issues">Các vấn đề đã biết</a>
+  <a href="#upgrade">Backend Thống nhất</a>
+  <a href="#handover-status">Trạng thái Bàn giao</a>
+  <a href="#contacts">Liên hệ</a>
+
+  <button class="print-btn no-print" onclick="window.print()">Xuất ra PDF</button>
+</nav>
+
+<main>
+
+<!-- ==================== HEADER ==================== -->
+<h1 id="overview">Trung tâm Dữ liệu Môi trường</h1>
+<div class="header-meta">
+  Nhóm Dữ liệu Spotlight, VnExpress &mdash; Tài liệu Bàn giao<br>
+  Ngày lập: Tháng 3, 2026 &nbsp;|&nbsp; Nguồn: <a href="https://github.com/lqtue/environmental-data-hub" target="_blank">github.com/lqtue/environmental-data-hub</a>
+</div>
+
+<div class="card accent">
+  <div class="card-title">Tài liệu này là gì?</div>
+  Mục lục trung tâm cho <strong>tất cả các dự án dữ liệu môi trường và thiên tai</strong> của nhóm Spotlight.
+  Mỗi dự án nằm trong một kho lưu trữ (repository) riêng &mdash; tài liệu này liên kết chúng lại với nhau, ghi chép cách dữ liệu luân chuyển giữa các dự án,
+  và cung cấp tài liệu tham khảo kỹ thuật đầy đủ cho mọi nguồn dữ liệu, endpoint API và script xử lý.
+</div>
+
+<!-- ==================== REPO MAP ==================== -->
+<h2 id="repos">Sơ đồ Kho lưu trữ (Repository)</h2>
+
+<h3>Chất lượng Không khí</h3>
+<table>
+  <tr><th>Kho lưu trữ (Repo)</th><th>Mô tả</th><th>Nguồn Dữ liệu</th><th>Trạng thái</th></tr>
+  <tr>
+    <td><a class="repo-link" href="https://github.com/spotlightvne/HanoiAQ" target="_blank">spotlightvne/HanoiAQ</a></td>
+    <td>Bản đồ PM2.5 cấp phường cho Hà Nội với mức phơi nhiễm tương đương số điếu thuốc lá</td>
+    <td><a href="https://geoi.edu.vn/vi/" target="_blank">GEOI</a> (ĐHQGHN)</td>
+    <td><span class="badge active">Hoạt động</span></td>
+  </tr>
+</table>
+
+<h3>Theo dõi Bão</h3>
+<table>
+  <tr><th>Kho lưu trữ (Repo)</th><th>Mô tả</th><th>Nguồn Dữ liệu</th><th>Trạng thái</th></tr>
+  <tr>
+    <td><em>2025Typhoon</em> (chưa có trên GitHub)</td>
+    <td>Bảng điều khiển bão thời gian thực + phân tích lịch sử đổ bộ</td>
+    <td>JTWC, JMA, IBTrACS, NASA POWER</td>
+    <td><span class="badge pending">Chỉ cục bộ</span></td>
+  </tr>
+</table>
+<p><strong>Các script:</strong> <code>jtwc_fetch.py</code> &middot; <code>kmz_to_geojson.py</code> &middot; <code>process_landfall.py</code> &middot; <code>fetch_rain.py</code></p>
+
+<h3>Mực nước & Hồ chứa</h3>
+<table>
+  <tr><th>Kho lưu trữ (Repo)</th><th>Mô tả</th><th>Nguồn Dữ liệu</th><th>Trạng thái</th></tr>
+  <tr>
+    <td><a class="repo-link" href="https://github.com/vnexpress-spotlight/WaterDashboard" target="_blank">vnexpress-spotlight/WaterDashboard</a></td>
+    <td>Mực nước sông (16 trạm) + lượng nước hồ (22 hồ chứa) trên toàn miền Trung</td>
+    <td>VNDMS, Thủy Lợi Việt Nam</td>
+    <td><span class="badge active">Hoạt động</span> &mdash; hàng giờ</td>
+  </tr>
+</table>
+<p><strong>Lưu vực:</strong> Sê San &middot; Hương&ndash;Bồ &middot; Vu Gia&ndash;Thu Bồn &middot; Trà Khúc &middot; Kôn&ndash;Hà Thanh &middot; Ba &middot; Cái</p>
+
+<h3>Cảnh báo Lũ quét & Sạt lở</h3>
+<table>
+  <tr><th>Kho lưu trữ (Repo)</th><th>Mô tả</th><th>Nguồn Dữ liệu</th><th>Trạng thái</th></tr>
+  <tr>
+    <td><a class="repo-link" href="https://github.com/vnexpress-spotlight/CentralVN.Landslide" target="_blank">vnexpress-spotlight/CentralVN.Landslide</a></td>
+    <td>Bản đồ nguy cơ sạt lở + lũ quét cấp xã (Huế & Đà Nẵng)</td>
+    <td>NCHMF</td>
+    <td><span class="badge active">Hoạt động</span> &mdash; hàng giờ</td>
+  </tr>
+</table>
+
+<h3>Bản đồ Ngập lụt</h3>
+<table>
+  <tr><th>Kho lưu trữ (Repo)</th><th>Mô tả</th><th>Nguồn Dữ liệu</th><th>Trạng thái</th></tr>
+  <tr>
+    <td><a class="repo-link" href="https://github.com/spotlightvne/floodmap" target="_blank">spotlightvne/floodmap</a></td>
+    <td>Trực quan hóa phạm vi ngập lụt (Miền Bắc VN, deck.gl)</td>
+    <td>Vệ tinh VegaCosmos + thủ công</td>
+    <td><span class="badge pending">Theo sự kiện</span></td>
+  </tr>
+  <tr>
+    <td><a class="repo-link" href="https://github.com/vnexpress-spotlight/FloodViz" target="_blank">vnexpress-spotlight/FloodViz</a></td>
+    <td>Trực quan hóa dữ liệu lũ (tối giản)</td>
+    <td>&mdash;</td>
+    <td><span class="badge archive">Lưu trữ</span></td>
+  </tr>
+  <tr>
+    <td><a class="repo-link" href="https://github.com/vnexpress-spotlight/FloodViz2" target="_blank">vnexpress-spotlight/FloodViz2</a></td>
+    <td>Dashboard kể chuyện lũ lụt đa phương tiện với timeline</td>
+    <td>Mưa/sông/nước + bài viết</td>
+    <td><span class="badge pending">Theo sự kiện</span></td>
+  </tr>
+  <tr>
+    <td><a class="repo-link" href="https://github.com/vnexpress-spotlight/MuaMienTrung" target="_blank">vnexpress-spotlight/MuaMienTrung</a></td>
+    <td>Lượng mưa miền Trung</td>
+    <td>&mdash;</td>
+    <td><span class="badge archive">Trống</span></td>
+  </tr>
+</table>
+
+<!-- ==================== DATA FLOW ==================== -->
+<h2 id="dataflow">Kiến trúc Luồng Dữ liệu</h2>
+
+<div class="flow">                    ┌─────────────────────────────┐
+                    │ Các Nguồn Dữ liệu Bên ngoài │
+                    └──────────┬──────────────────┘
+                               │
+        ┌──────────┬───────────┼───────────┬──────────────┐
+        ▼          ▼           ▼           ▼              ▼
+    JTWC/JMA    VNDMS     Thủy Lợi     NCHMF     GEOI / VegaCosmos
+     (bão)      (sông)     (hồ)     (cảnh báo)   (CQKK / vùng ngập)
+        │          │           │           │              │
+        ▼          └─────┬─────┘           │              │
+  2025Typhoon        WaterDashboard        │              │
+  jtwc_fetch.py      water_export_cli.py   │              │
+  kmz_to_geojson.py                        │              │
+        │                │                 │              │
+        │                │          ┌──────┘       ┌──────┘
+        │                │          ▼              ▼
+        │                │    CentralVN.      HanoiAQ
+        │                │    Landslide       floodmap
+        │                │          │
+        ▼                ▼          ▼
+  ┌──────────────────────────────────────────┐
+  │         Lớp Bài viết / Kể chuyện         │
+  │     FloodViz2, 2025typhon2, floodmap     │
+  │     (story.json + văn bản tự sự)         │
+  └──────────────────────────────────────────┘</div>
+
+<!-- ==================== DATA SOURCES ==================== -->
+<h2 id="sources">Tham chiếu Nguồn Dữ liệu</h2>
+
+<table>
+  <tr><th>Nguồn</th><th>Loại Dữ liệu</th><th>Cách Truy cập</th><th>Được dùng bởi</th></tr>
+  <tr><td><strong>JTWC</strong> (Hải quân Mỹ)</td><td>Đường đi bão thời gian thực + dự báo</td><td>Công khai (RSS + text/KMZ)</td><td>2025Typhoon</td></tr>
+  <tr><td><strong>JMA</strong> (Nhật Bản)</td><td>Vị trí bão dự phòng</td><td>JS endpoint công khai (mùa bão)</td><td>2025Typhoon</td></tr>
+  <tr><td><strong>IBTrACS</strong> (NOAA)</td><td>Đường đi bão lịch sử (1841&ndash;nay)</td><td>Tải về công khai</td><td>2025Typhoon</td></tr>
+  <tr><td><strong>NASA POWER</strong></td><td>Lượng mưa hàng ngày + khí hậu 30 năm</td><td>API công khai, không cần key</td><td>2025Typhoon</td></tr>
+  <tr><td><strong>VNDMS</strong></td><td>Mực nước sông</td><td>Công khai (cần giả mạo headers)</td><td>WaterDashboard</td></tr>
+  <tr><td><strong>Thủy lợi Việt Nam</strong></td><td>Mực nước, dung tích, xả lũ hồ chứa</td><td>Công khai (chỉ HTTP)</td><td>WaterDashboard</td></tr>
+  <tr><td><strong>NCHMF</strong></td><td>Cảnh báo lũ quét + sạt lở</td><td>API công khai</td><td>WaterDashboard, CentralVN.Landslide</td></tr>
+  <tr><td><strong>GEOI</strong> (ĐHQGHN)</td><td>Mô hình PM2.5 cấp phường</td><td>Theo thỏa thuận</td><td>HanoiAQ</td></tr>
+  <tr><td><strong>VegaCosmos</strong></td><td>Đa giác vùng ngập từ vệ tinh</td><td>Yêu cầu theo từng sự kiện</td><td>floodmap</td></tr>
+</table>
+
+<!-- ==================== TECHNICAL GUIDE ==================== -->
+<h2 id="typhoon">Theo dõi Bão</h2>
+
+<h3 id="typhoon-jtwc">Nguồn Chính: JTWC</h3>
+<p><strong>Trung tâm Cảnh báo Bão Liên hợp</strong> (Hải quân/Không quân Hoa Kỳ) công bố các cảnh báo bão nhiệt đới Tây Thái Bình Dương ở ba định dạng:</p>
+
+<div class="tabs" data-tabgroup="jtwc">
+  <button class="tab-btn active" data-tab="rss">Nguồn cấp RSS</button>
+  <button class="tab-btn" data-tab="text">Cảnh báo Văn bản</button>
+  <button class="tab-btn" data-tab="kmz">Tệp KMZ</button>
+</div>
+<div class="tab-panel active" data-tabgroup="jtwc" data-tab="rss">
+  <p><strong>Khám phá các cơn bão đang hoạt động:</strong></p>
+  <pre>https://www.metoc.navy.mil/jtwc/rss/jtwc.rss</pre>
+</div>
+<div class="tab-panel" data-tabgroup="jtwc" data-tab="text">
+  <p><strong>Vị trí hiện tại + dự báo 5 ngày cho mỗi cơn bão:</strong></p>
+  <pre>https://www.metoc.navy.mil/jtwc/products/wp{NN}{YYYY}.txt</pre>
+  <p>Bao gồm: vị trí, sức gió duy trì tối đa (knots), áp suất mực nước biển tối thiểu (mb), và dự báo tại TAU 12/24/36/48/72/96/120 giờ.</p>
+</div>
+<div class="tab-panel" data-tabgroup="jtwc" data-tab="kmz">
+  <p><strong>Định dạng Google Earth với bán kính gió và đường đi tốt nhất (best track):</strong></p>
+  <pre>https://www.metoc.navy.mil/jtwc/products/wp{NN}{YYYY}.kmz</pre>
+  <p>Sử dụng cho phạm vi theo dõi một sự kiện cụ thể (đa giác bán kính gió, dải nguy hiểm).</p>
+</div>
+
+<p><strong>Nên dùng định dạng nào:</strong> Tự động/theo lịch &rarr; cảnh báo văn bản (nhanh hơn, không cần giải nén). Đưa tin một sự kiện &rarr; KMZ (đa giác bán kính gió, dải nguy hiểm).</p>
+
+<h3 id="typhoon-jma">Dự phòng: JMA</h3>
+<p>Khi JTWC không khả dụng, JMA RSMC Tokyo cung cấp vị trí hiện hành (không dự báo):</p>
+<pre>https://www.jma.go.jp/bosai/typhoon/data/targetTc.js</pre>
+<p>Tệp này chỉ tồn tại khi có bão đang hoạt động.</p>
+
+<h3 id="typhoon-scripts">Các Script</h3>
+
+<details>
+  <summary>jtwc_fetch.py &mdash; Tự động lấy dữ liệu (GitHub Actions mỗi 6h)</summary>
+  <div class="detail-body">
+    <pre>pip install requests
+python scripts/jtwc_fetch.py
+# Đầu ra: data/jtwc_active.geojson</pre>
+    <p><strong>Quy trình:</strong> RSS &rarr; tìm bão đang hoạt động &rarr; tải văn bản cảnh báo &rarr; trích xuất vị trí + dự báo &rarr; GeoJSON. Sẽ tự động dùng JMA nếu lỗi.</p>
+    <p><strong>Thuộc tính đầu ra:</strong> <code>SID</code>, <code>NAME</code>, <code>USA_WIND</code> (kt), <code>USA_PRES</code> (mb), <code>track_type</code> (<code>current</code>/<code>forecast</code>), <code>tau</code> (giờ), <code>category</code>, <code>fetched_at</code>.</p>
+    <p><strong>GitHub Actions:</strong> <code>jtwc_fetch.yml</code> chạy mỗi 6h. Có thể kích hoạt thủ công từ tab Actions để cập nhật nhanh hơn khi có bão.</p>
+  </div>
+</details>
+
+<details>
+  <summary>kmz_to_geojson.py &mdash; Chuyển đổi KMZ thủ công</summary>
+  <div class="detail-body">
+    <pre>python scripts/kmz_to_geojson.py path/to/storm.kmz
+# Đầu ra: data/storm.geojson</pre>
+    <p>Trích xuất 4 loại dữ liệu hình học (qua thuộc tính <code>feature_type</code>):</p>
+    <table>
+      <tr><th>feature_type</th><th>Định dạng Hình học</th><th>Nội dung</th></tr>
+      <tr><td><code>forecast_point</code></td><td>Point</td><td>Vị trí tại mỗi mốc TAU</td></tr>
+      <tr><td><code>wind_radii</code></td><td>Polygon</td><td>Phạm vi gió 34/50/64 kt</td></tr>
+      <tr><td><code>best_track_point</code></td><td>Point</td><td>Đường đi lịch sử trong quá khứ</td></tr>
+      <tr><td><code>forecast_track</code> / <code>danger_swath</code></td><td>LineString / Polygon</td><td>Đường dự báo / khu vực rủi ro</td></tr>
+    </table>
+    <p>Thời gian được chuyển đổi sang GMT+7 và định dạng kiểu tiếng Việt (vd: <code>T3, 17/3 19:00</code>).</p>
+  </div>
+</details>
+
+<details>
+  <summary>process_landfall.py &mdash; Phân tích dữ liệu lịch sử IBTrACS</summary>
+  <div class="detail-body">
+    <pre>python scripts/process_landfall.py
+# Đầu ra: data/typhoon_landfalls.csv</pre>
+    <p>Chạy một lần mỗi mùa bão với dữ liệu IBTrACS được cập nhật mới nhất.</p>
+  </div>
+</details>
+
+<details>
+  <summary>fetch_rain.py &mdash; Dị thường lượng mưa NASA POWER</summary>
+  <div class="detail-body">
+    <pre>pip install geopandas pandas numpy requests scipy matplotlib shapely
+python scripts/fetch_rain.py
+# Đầu ra: rain/RainAnomaly.geojson (mất khoảng 5-10 phút)</pre>
+    <p>Chỉnh sửa khoảng thời gian ở đầu script, đặt tệp <code>CountryBoundary.geojson</code> ở thư mục gốc của kho lưu trữ.</p>
+  </div>
+</details>
+
+<h4>Phân loại Sức gió</h4>
+<table>
+  <tr><th>Knots</th><th>km/h</th><th>Tiếng Việt</th></tr>
+  <tr><td>&lt; 34</td><td>&lt; 63</td><td>Áp thấp nhiệt đới</td></tr>
+  <tr><td>34&ndash;47</td><td>63&ndash;87</td><td>Bão nhiệt đới</td></tr>
+  <tr><td>48&ndash;63</td><td>88&ndash;117</td><td>Bão nhiệt đới mạnh</td></tr>
+  <tr><td>64&ndash;129</td><td>118&ndash;239</td><td>Bão</td></tr>
+  <tr><td>&ge; 130</td><td>&ge; 241</td><td>Siêu bão</td></tr>
+</table>
+
+<!-- ==================== WATER LEVELS ==================== -->
+<h2 id="water">Mực Nước</h2>
+
+<h3 id="water-vndms">Nguồn: VNDMS</h3>
+<p><strong>VNDMS</strong> (Cục Quản lý Đê điều và Phòng chống thiên tai) vận hành mạng lưới quan trắc mực nước quốc gia.</p>
+
+<h4>Endpoint danh sách trạm</h4>
+<pre>GET https://vndms.dmptc.gov.vn/water_level?lv={0,1,2,3}</pre>
+<p>Trả về GeoJSON FeatureCollection. <code>lv</code> dùng để lọc theo mức báo động (0 = bình thường, 1/2/3 = BĐ1/2/3).</p>
+
+<h4>Endpoint dữ liệu trạm</h4>
+<pre>POST https://vndms.dmc.gov.vn/home/detailRain
+     id={station_id}&amp;timeSelect=7&amp;source=Water</pre>
+<p>Trả về JSON với: <code>labels</code> (thời gian), <code>value</code> (mực nước tính bằng mét), <code>bao_dong1/2/3</code> (các ngưỡng báo động), <code>gia_tri_lu_lich_su</code> + <code>nam_lu_lich_su</code> (kỷ lục lũ lụt lịch sử).</p>
+
+<div class="card warn">
+  <div class="card-title">Header Bắt buộc</div>
+  VNDMS yêu cầu giả mạo header, nếu không các request sẽ bị từ chối:
+  <pre>headers = {
+    "User-Agent": "Mozilla/5.0 ...",
+    "Referer": "https://vndms.dmptc.gov.vn/",
+    "Origin": "https://vndms.dmptc.gov.vn",
+}</pre>
+</div>
+
+<h3 id="water-stations">Các Trạm đang được Quan trắc (16)</h3>
+<table>
+  <tr><th>Lưu vực</th><th>Các Trạm</th></tr>
+  <tr><td>Sê San</td><td>Kon Tum, Kon Plông</td></tr>
+  <tr><td>Hương&ndash;Bồ</td><td>Phú Ốc, Kim Long</td></tr>
+  <tr><td>Vu Gia&ndash;Thu Bồn</td><td>Cẩm Lệ, Ái Nghĩa, Hội Khách</td></tr>
+  <tr><td>Trà Khúc</td><td>Trà Khúc</td></tr>
+  <tr><td>Kôn&ndash;Hà Thanh</td><td>Bình Nghi</td></tr>
+  <tr><td>Ba</td><td>Củng Sơn, Phú Lâm, An Khê, AyunPa</td></tr>
+  <tr><td>Cái</td><td>Ninh Hoà, Đồng Trăng, Tân Mỹ</td></tr>
+</table>
+
+<div class="card info">
+  <div class="card-title">Thêm một trạm mới</div>
+  Tìm ID số từ trang web của VNDMS (inspect các request network) và thêm vào <code>config_stations.json</code>:
+  <pre>"stations": {
+  "71234": {"name": "Tên Trạm", "basin_recode": "Tên Lưu vực"}
+}</pre>
+</div>
+
+<h4>Phân loại Báo động</h4>
+<table>
+  <tr><th>Mức độ</th><th>Tiếng Việt</th><th>Ý nghĩa</th></tr>
+  <tr><td>0</td><td>Dưới BĐ1</td><td>Dưới báo động 1 &mdash; bình thường</td></tr>
+  <tr><td>1</td><td>Trên BĐ1</td><td>Trên báo động 1 &mdash; cảnh giác</td></tr>
+  <tr><td>2</td><td>Trên BĐ2</td><td>Trên báo động 2 &mdash; cảnh báo</td></tr>
+  <tr><td>3</td><td>Trên BĐ3</td><td>Trên báo động 3 &mdash; khẩn cấp</td></tr>
+  <tr><td>4</td><td>Trên lũ lịch sử</td><td>Vượt qua kỷ lục lũ lụt lịch sử</td></tr>
+</table>
+
+<!-- ==================== LAKES ==================== -->
+<h2 id="lakes">Giám sát Hồ chứa</h2>
+
+<h3 id="lakes-api">Nguồn: Thủy Lợi Việt Nam</h3>
+<p><strong>Tổng cục Thủy lợi</strong> công bố dữ liệu hồ chứa hàng ngày:</p>
+<pre>POST http://e15.thuyloivietnam.vn/CanhBaoSoLieu/ATCBDTHo
+     time={YYYY-MM-DD HH:mm:ss,000}&amp;ishothuydien=0</pre>
+
+<div class="card warn">
+  <div class="card-title">Chỉ HTTP &mdash; không có HTTPS</div>
+  Endpoint này sử dụng HTTP (không phải HTTPS). Đây là một rủi ro bảo mật tiềm ẩn.
+</div>
+
+<h4>Các Trường Dữ liệu Chính Mỗi Hồ</h4>
+<table>
+  <tr><th>Trường API</th><th>Ý nghĩa</th></tr>
+  <tr><td><code>LakeCode</code></td><td>UUID định danh hồ</td></tr>
+  <tr><td><code>TdMucNuoc</code></td><td>Mực nước hiện tại (m)</td></tr>
+  <tr><td><code>TdDungTich</code></td><td>Dung tích lưu trữ hiện tại (m&sup3;)</td></tr>
+  <tr><td><code>TkDungTich</code></td><td>Dung tích thiết kế (m&sup3;)</td></tr>
+  <tr><td><code>TiLeDungTichTdSoTk</code></td><td>Phần trăm lưu trữ so với dung tích thiết kế</td></tr>
+  <tr><td><code>QDen</code></td><td>Lưu lượng đến (m&sup3;/s)</td></tr>
+  <tr><td><code>QXa</code></td><td>Lưu lượng xả (m&sup3;/s)</td></tr>
+  <tr><td><code>MucNuocDangBinhThuong</code></td><td>Mực nước dâng bình thường (m)</td></tr>
+  <tr><td><code>MucNuocDangGiaCuong</code></td><td>Mực nước dâng gia cường (mức an toàn tối đa) (m)</td></tr>
+  <tr><td><code>XuThe</code></td><td>Chỉ báo xu hướng</td></tr>
+</table>
+
+<div class="card info">
+  <div class="card-title">Thêm một hồ mới</div>
+  Tìm UUID của hồ từ trang web Thủy lợi Việt Nam và thêm vào <code>config_stations.json</code>:
+  <pre>"lakes": {
+  "UUID-HERE": {"name": "Tên Hồ", "basin_recode": "Lưu vực", "province_recode": "Tỉnh"}
+}</pre>
+</div>
+
+<p><strong>22 hồ chứa</strong> hiện đang được giám sát trên 7 lưu vực (Sê San, Hương&ndash;Bồ, Vu Gia&ndash;Thu Bồn, Trà Khúc, Ba, Kôn&ndash;Hà Thanh, Cái).</p>
+
+<!-- ==================== FLOOD WARNING ==================== -->
+<h2 id="flood-warning">Cảnh báo Lũ quét & Sạt lở</h2>
+
+<h3 id="flood-nchmf">Nguồn: NCHMF</h3>
+<p><strong>NCHMF</strong> (Trung tâm Dự báo Khí tượng Thủy văn Quốc gia) xuất bản các đánh giá rủi ro cấp xã:</p>
+<pre>POST https://luquetsatlo.nchmf.gov.vn/LayerMapBox/getDSCanhbaoSLLQ
+     sogiodubao=6&amp;date={YYYY-MM-DD HH:mm:ss}</pre>
+
+<h4>Các Trường Phản hồi</h4>
+<table>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td><code>commune_id_2cap</code></td><td>Mã xã</td></tr>
+  <tr><td><code>commune_name_2cap</code></td><td>Tên xã</td></tr>
+  <tr><td><code>provinceName_2cap</code></td><td>Tên tỉnh</td></tr>
+  <tr><td><code>nguycosatlo</code></td><td>Nguy cơ sạt lở: <em>Rất cao / Cao / Trung bình / Thấp</em></td></tr>
+  <tr><td><code>nguycoluquet</code></td><td>Nguy cơ lũ quét: cùng thang đo</td></tr>
+</table>
+
+<details>
+  <summary>landslide_export_cli.py &mdash; Script xuất dữ liệu cảnh báo</summary>
+  <div class="detail-body">
+    <pre>python landslide_export_cli.py
+# Đầu ra: data/landslide.csv</pre>
+    <ol>
+      <li>Lấy dữ liệu cảnh báo hiện hành từ NCHMF (làm tròn đến giờ hiện tại)</li>
+      <li>Nếu một xã xuất hiện nhiều lần, giữ lại mức cảnh báo nghiêm trọng nhất</li>
+      <li>Ghi ra file <code>data/landslide.csv</code> (ghi đè mỗi lần chạy &mdash; chỉ giữ trạng thái mới nhất)</li>
+    </ol>
+    <p><strong>GitHub Actions:</strong> Chạy hàng giờ như một phần của <code>main.yml</code> cùng với dữ liệu nước. Tự tạo PR + gửi email khi có cảnh báo.</p>
+  </div>
+</details>
+
+<h4>Kho lưu trữ CentralVN.Landslide</h4>
+<p>Bản đồ trực quan hóa tập trung vào các xã ở Huế và Đà Nẵng. File <code>list.csv</code> của nó tích lũy các bản cập nhật hàng giờ theo thời gian (không giống như WaterDashboard chỉ giữ lại bản mới nhất). File <code>boundary.geojson</code> chứa các đa giác (polygon) của các xã, được khớp nối bằng <code>commune_id_2cap</code>.</p>
+
+<!-- ==================== FLOOD MAPPING ==================== -->
+<h2 id="flood-mapping">Bản đồ Phạm vi Ngập lụt</h2>
+
+<h3>Các Nguồn Dữ liệu</h3>
+<ul>
+  <li><strong>VegaCosmos</strong> &mdash; Nhà cung cấp hình ảnh vệ tinh của Việt Nam. Sau một sự kiện lũ, họ cung cấp các đa giác phạm vi ngập phân loại từ ảnh SAR của Sentinel-1. Không có API công khai; dữ liệu phải được yêu cầu theo từng sự kiện.</li>
+  <li><strong>Số hóa thủ công</strong> &mdash; ranh giới ngập được vẽ từ các bản tin, thông báo chính phủ, hoặc quan sát thực địa.</li>
+</ul>
+
+<h3>Kho lưu trữ spotlightvne/floodmap</h3>
+<p>Công cụ trực quan hóa sử dụng deck.gl cho các sự kiện lũ lụt miền Bắc Việt Nam:</p>
+<table>
+  <tr><th>Tệp</th><th>Mô tả</th></tr>
+  <tr><td><code>flood_area.json</code></td><td>Đa giác phạm vi ngập lụt</td></tr>
+  <tr><td><code>water.json</code></td><td>Dữ liệu trạm đo nước cho sự kiện</td></tr>
+  <tr><td><code>wards.json</code></td><td>Ranh giới cấp phường/xã (để tính toán dân số bị ảnh hưởng)</td></tr>
+  <tr><td><code>floodmap.html</code></td><td>Bản đồ tương tác (deck.gl + TopoJSON)</td></tr>
+</table>
+
+<div class="card info">
+  <div class="card-title">Cập nhật cho sự kiện mới</div>
+  Thay thế <code>flood_area.json</code> bằng các đa giác ngập lụt mới, cập nhật <code>water.json</code> với dữ liệu mực nước của sự kiện, và điều chỉnh lại phạm vi (bounds) của bản đồ trong <code>floodmap.html</code>.
+</div>
+
+<!-- ==================== RAINFALL ==================== -->
+<h2 id="rainfall">Dị thường Lượng mưa</h2>
+
+<h3>Nguồn: NASA POWER</h3>
+<p>NASA POWER cung cấp dữ liệu lượng mưa hàng ngày trên toàn cầu (1981&ndash;nay). Không cần đăng ký tài khoản.</p>
+<table>
+  <tr><th>Endpoint</th><th>Trả về</th></tr>
+  <tr><td><code>GET /api/temporal/daily/point?parameters=PRECTOTCORR&amp;latitude=X&amp;longitude=Y&amp;start=YYYYMMDD&amp;end=YYYYMMDD</code></td><td>Lượng mưa hàng ngày (mm) cho một tọa độ điểm</td></tr>
+  <tr><td><code>GET /api/temporal/climatology/point?parameters=PRECTOTCORR&amp;latitude=X&amp;longitude=Y</code></td><td>Trung bình tháng trong 30 năm</td></tr>
+</table>
+
+<h4>Cách tính Độ Dị thường (Anomaly)</h4>
+<p>Đối với mỗi điểm lưới trên toàn Việt Nam ở độ phân giải 0.5&deg; (~300 điểm):</p>
+<ol>
+  <li>Tải lượng mưa hàng ngày trong khoảng thời gian diễn ra sự kiện</li>
+  <li>Tải mức trung bình tháng trong 30 năm</li>
+  <li><strong>Dị thường = tổng thực tế &minus; tổng kỳ vọng</strong> (số dương = ướt hơn bình thường)</li>
+  <li>Nội suy từ độ phân giải 0.5&deg; sang 0.05&deg;, cắt xén theo ranh giới Việt Nam</li>
+</ol>
+
+<!-- ==================== WORKFLOW ==================== -->
+<h2 id="workflow">Quy trình làm việc thông thường</h2>
+
+<h3>Trong khi có Bão hoạt động</h3>
+<pre>Hàng giờ (Tự động): water_export_cli.py     &rarr; data/water_data_full_combined.csv
+                    landslide_export_cli.py  &rarr; data/landslide.csv
+                    &rarr; GitHub Actions tạo PR + gửi email thông báo cho team
+
+Mỗi 6h (Tự động):   jtwc_fetch.py            &rarr; data/jtwc_active.geojson
+                    &rarr; Đẩy lên GitHub, dashboard tự động làm mới
+
+Thủ công:           Tải file KMZ             &rarr; kmz_to_geojson.py &rarr; bán kính gió
+                    Xin dữ liệu VegaCosmos   &rarr; cập nhật bản đồ floodmap</pre>
+
+<h3>Sau Bão (Bài viết Sau sự kiện)</h3>
+<pre>1. fetch_rain.py              &rarr; rain/RainAnomaly.geojson
+2. Tải IBTrACS mới cập nhật   (nếu mùa bão đã kết thúc)
+3. process_landfall.py        &rarr; data/typhoon_landfalls.csv
+4. compute_province_metrics.py &rarr; data/province_metrics.json
+5. Ráp câu chuyện              &rarr; story.json + text.md (dùng cho FloodViz2/2025typhon2)</pre>
+
+<!-- ==================== KNOWN ISSUES ==================== -->
+<h2 id="issues">Các Vấn đề Đã biết</h2>
+
+<div class="card warn">
+  <div class="card-title">Dữ liệu Bão</div>
+  <ul>
+    <li><strong>Trích xuất văn bản JTWC sử dụng Regex.</strong> Nếu định dạng văn bản thay đổi sẽ làm hỏng trình phân tích một cách âm thầm. Hãy kiểm tra lại <code>jtwc_active.geojson</code> vào đầu mỗi mùa bão.</li>
+    <li><strong>Định dạng KMZ rất dễ lỗi.</strong> Việc trích xuất bán kính gió phụ thuộc vào cấu trúc KML của JTWC, và cấu trúc này có thể thay đổi tùy từng cơn bão.</li>
+    <li><strong>Không có tính năng tự động phát hiện đổ bộ (landfall).</strong> <code>process_landfall.py</code> chạy offline và yêu cầu tải dữ liệu IBTrACS thủ công.</li>
+  </ul>
+</div>
+
+<div class="card warn">
+  <div class="card-title">Dữ liệu Nước & Hồ chứa</div>
+  <ul>
+    <li><strong>File CSV phình to không giới hạn.</strong> <code>water_data_full_combined.csv</code> tích lũy các dữ liệu đọc hàng giờ mà không tự xóa bớt. Cần phải cắt bỏ dữ liệu cũ hơn 30 ngày ở mỗi mùa lũ.</li>
+    <li><strong>Chỉ giám sát 16 trạm và 22 hồ</strong> &mdash; đây là một tập hợp được chọn lọc, không phải toàn bộ mạng lưới quốc gia.</li>
+    <li><strong>Endpoint VNDMS rất dễ lỗi.</strong> Yêu cầu phải giả mạo header. Nếu trang web thay đổi cách xác thực, crawler sẽ không hoạt động.</li>
+    <li><strong>Thủy Lợi Việt Nam sử dụng HTTP</strong> (không phải HTTPS) &mdash; tiềm ẩn rủi ro bảo mật.</li>
+    <li><strong>Thao tác ghi file CSV không nguyên tử (non-atomic).</strong> Nếu script bị crash khi đang ghi giữa chừng, file CSV có thể bị hỏng.</li>
+  </ul>
+</div>
+
+<div class="card warn">
+  <div class="card-title">Dữ liệu Lũ & Sạt lở</div>
+  <ul>
+    <li><strong>Cảnh báo NCHMF chỉ là bản chụp nhanh (snapshots).</strong> Mỗi lần fetch hàng giờ sẽ lưu lại trạng thái hiện tại. Nếu lỡ một lượt fetch = mất dữ liệu.</li>
+    <li><strong>CentralVN.Landslide chỉ giới hạn ở Huế + Đà Nẵng.</strong> Nếu muốn mở rộng sẽ cần bộ dữ liệu ranh giới xã mới.</li>
+    <li><strong>Không có tính năng xử lý việc sáp nhập/thay đổi mã xã.</strong> Nếu NCHMF cập nhật mã số sau các đợt sáp nhập hành chính, việc ánh xạ lên bản đồ sẽ bị lỗi.</li>
+    <li><strong>Dữ liệu vùng ngập lụt (VegaCosmos) không có API.</strong> Phải yêu cầu một cách thủ công qua mỗi sự kiện.</li>
+  </ul>
+</div>
+
+<div class="card warn">
+  <div class="card-title">Dữ liệu Lượng mưa</div>
+  <ul>
+    <li><strong>Độ phân giải NASA POWER rất thô</strong> (0.5&deg; &asymp; 50 km). Chỉ tốt để xem tổng quan khu vực, không phù hợp cho bản đồ tác động chi tiết.</li>
+    <li><strong>Mất từ 5&ndash;10 phút cho mỗi lần chạy</strong> do phải gọi API tuần tự khoảng ~300 lần.</li>
+  </ul>
+</div>
+
+<!-- ==================== UNIFIED BACKEND ==================== -->
+<h2 id="upgrade">Hệ thống Backend Thống nhất (Đề xuất Nâng cấp)</h2>
+
+<div class="card accent">
+  <div class="card-title">Một hệ thống hoàn thiện hơn đã được xây dựng</div>
+  <p>Các công cụ ở trên được xây dựng theo từng phần &mdash; mỗi dự án một câu chuyện. Một hệ thống backend thống nhất sẽ giải quyết sự phân mảnh này:</p>
+  <ul>
+    <li><strong>Một cơ sở dữ liệu duy nhất</strong> (PostgreSQL + PostGIS) &mdash; quản lý bão, mực nước, hồ chứa, cảnh báo, đường đi lịch sử, lượng mưa trong cùng một schema</li>
+    <li><strong>Mạng lưới trạm đo đầy đủ</strong> &mdash; toàn bộ các trạm VNDMS hiện có, không chỉ giới hạn ở 16 trạm</li>
+    <li><strong>REST API</strong> &mdash; truy vấn mọi dữ liệu theo vị trí, khoảng thời gian, hoặc ID cơn bão qua một lệnh gọi HTTP duy nhất</li>
+    <li><strong>Các crawler tự động</strong> cho mọi nguồn dữ liệu chạy ngầm qua GitHub Actions cron</li>
+    <li><strong>Chế độ cảnh báo</strong> &mdash; tự động tăng tần suất cào dữ liệu (crawl) khi một cơn bão đi vào vùng theo dõi của Việt Nam (95&ndash;120&deg;E, 5&ndash;28&deg;N)</li>
+    <li><strong>Giải quyết vấn đề phình to CSV</strong> &mdash; sử dụng bảng chuỗi thời gian (time-series) đúng chuẩn với index và chính sách giữ liệu (data retention)</li>
+  </ul>
+  <p>Các giao diện frontend hiện tại có thể kết nối với API này với rất ít thay đổi &mdash; chỉ cần thay đổi từ việc đọc file CSV sang việc gọi API.</p>
+  <p>Liên hệ <strong>Tuệ (lqtue@gmail.com)</strong> để được cấp quyền truy cập API &mdash; không cần cài đặt gì thêm, chỉ cần một URL và một khóa đọc (read-only key).</p>
+</div>
+
+<!-- ==================== HANDOVER STATUS ==================== -->
+<h2 id="handover-status">Trạng thái Bàn giao</h2>
+
+<table>
+  <tr><th>#</th><th>Hạng mục</th><th>Trạng thái</th><th>Ghi chú</th></tr>
+  <tr>
+    <td>1</td>
+    <td>Bản đồ ranh giới TP.HCM 1975&ndash;nay</td>
+    <td><span class="badge active">Hoàn thành</span></td>
+    <td>Dữ liệu nằm ở <code>spotlightvne/HCMCmap</code></td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>Tra cứu danh sách "168 phường xã mới"</td>
+    <td><span class="badge active">Đang mở PR</span></td>
+    <td><a href="https://github.com/spotlightVnE/HCMCmap/pull/1" target="_blank">PR #1</a> &mdash; chờ merge</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>Nền tảng dữ liệu Bão / Thiên tai</td>
+    <td><span class="badge pending">Đang thực hiện</span></td>
+    <td>Code cục bộ chưa được đẩy lên (push); tài liệu phương pháp luận = chính tài liệu này</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td>Chất lượng không khí &mdash; "Người Hà Nội hút thuốc thụ động"</td>
+    <td><span class="badge active">Hoàn thành</span></td>
+    <td>Ở repo <code>spotlightvne/HanoiAQ</code> &mdash; hãy kiểm tra lại</td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td>Xu hướng chuyển đổi xe điện</td>
+    <td><span class="badge missing">Thiếu</span></td>
+    <td>Chưa xác định được vị trí các file dự án đang làm dở</td>
+  </tr>
+</table>
+
+<!-- ==================== CONTACTS ==================== -->
+<h2 id="contacts">Liên hệ & Các Tài khoản</h2>
+
+<h3>Các Tổ chức (Organizations) GitHub</h3>
+<table>
+  <tr><th>Tài khoản</th><th>Mục đích</th></tr>
+  <tr><td><a href="https://github.com/vnexpress-spotlight" target="_blank">vnexpress-spotlight</a></td><td>Tài khoản nhóm: WaterDashboard, FloodViz, FloodViz2, CentralVN.Landslide, MuaMienTrung</td></tr>
+  <tr><td><a href="https://github.com/spotlightvne" target="_blank">spotlightvne</a></td><td>Tài khoản nhóm: HCMCmap, HanoiAQ, AdminName, floodmap, vienphi2035</td></tr>
+  <tr><td><a href="https://github.com/lqtue" target="_blank">lqtue</a></td><td>Tài khoản cá nhân (Tuệ) &mdash; không nên sử dụng nữa sau khi bàn giao</td></tr>
+</table>
+
+<h3>Liên hệ về API / Quyền truy cập Backend</h3>
+<p><strong>Tuệ</strong> &mdash; <a href="mailto:lqtue@gmail.com">lqtue@gmail.com</a></p>
+
+<hr>
+<p style="color: var(--muted); font-size: 12px; text-align: center; margin-top: 24px;">
+  Nhóm Dữ liệu Spotlight, VnExpress &mdash; Tháng 3, 2026<br>
+  Nguồn: <a href="https://github.com/lqtue/environmental-data-hub" target="_blank">github.com/lqtue/environmental-data-hub</a>
+</p>
+
+</main>
+
+<script>
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const group = btn.closest('.tabs').dataset.tabgroup;
+    const tab = btn.dataset.tab;
+    // Deactivate all in group
+    document.querySelectorAll(`.tabs[data-tabgroup="${group}"] .tab-btn`).forEach(b => b.classList.remove('active'));
+    document.querySelectorAll(`.tab-panel[data-tabgroup="${group}"]`).forEach(p => p.classList.remove('active'));
+    // Activate clicked
+    btn.classList.add('active');
+    document.querySelector(`.tab-panel[data-tabgroup="${group}"][data-tab="${tab}"]`).classList.add('active');
+  });
+});
+
+// Smooth scroll + active nav highlight
+const navLinks = document.querySelectorAll('nav a[href^="#"]');
+const sections = Array.from(navLinks).map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+
+function highlightNav() {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+}
+window.addEventListener('scroll', highlightNav);
+highlightNav();
+
+// Smooth scroll
+navLinks.forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Close mobile nav
+    document.querySelector('nav').classList.remove('open');
+  });
+});
+
+// Open all details when printing
+window.addEventListener('beforeprint', () => {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+});
+</script>
+
+</body>
+</html>
