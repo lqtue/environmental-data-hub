@@ -565,6 +565,20 @@ The simplest implementation is a single-page web app where the user:
 - Electric scooter vs. Honda Wave — the decisive case
 - Future projection: how the answer changes as Vietnam's grid gets cleaner (and when BEV overtakes HEV)
 
+### Working prototype
+
+A sample interactive calculator is available at [`interactive/ev-lca-calculator.html`](../interactive/ev-lca-calculator.html) ([live demo](https://lqtue.github.io/environmental-data-hub/interactive/ev-lca-calculator.html)). It implements the core methodology above as a single self-contained HTML page (vanilla JS, no dependencies). Features:
+
+- Vehicle type selector: xe máy / xe nhỏ / xe trung / SUV with real Vietnam market examples
+- Four-way powertrain comparison: BEV / HEV / PHEV / ICEV
+- Grid scenario toggle (2025 → 2030 → 2040 → 2050) — demonstrates the BEV vs HEV crossover as grid decarbonizes
+- Adjustable sliders: lifetime km, battery size, ICEV and BEV fuel economy
+- Stacked bar chart with manufacturing / battery / WTT / TTW breakdown
+- Running cost table (VND/100km) with savings vs ICEV
+- Dynamic insight text explaining which powertrain wins and why
+
+This prototype can be embedded directly in a VnExpress article via iframe or adapted into a more polished D3/Plotly version for production.
+
 ### Data pipeline
 
 ```
