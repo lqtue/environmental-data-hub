@@ -8,7 +8,7 @@ Adapted from the [IEA Global EV Data Explorer LCA Calculator Methodology](https:
 
 ## 1. Overview
 
-This methodology describes how to estimate the total lifecycle greenhouse gas (GHG) emissions of vehicles sold in Vietnam, comparing battery electric vehicles (BEV), plug-in hybrid electric vehicles (PHEV), and internal combustion engine vehicles (ICEV). The goal is to produce a data-driven, Vietnam-specific comparison that readers can interact with — e.g. "Is an electric car actually greener in Vietnam, given how much coal we burn for electricity?"
+This methodology describes how to estimate the total lifecycle greenhouse gas (GHG) emissions of vehicles sold in Vietnam, comparing battery electric vehicles (BEV), hybrid electric vehicles (HEV), plug-in hybrid electric vehicles (PHEV), and internal combustion engine vehicles (ICEV). The goal is to produce a data-driven, Vietnam-specific comparison that readers can interact with — e.g. "Is an electric car actually greener in Vietnam, given how much coal we burn for electricity?"
 
 The assessment covers emissions from **cradle to grave**:
 
@@ -73,9 +73,9 @@ Unlike the IEA tool (which covers only passenger cars), this Vietnam adaptation 
 | Segment | Examples | Powertrains |
 |---|---|---|
 | **Motorbike / Scooter** | Honda Wave, VinFast Klara, Yadea | ICEV, BEV |
-| **Small car** (A/B segment) | VinFast VF 5, Hyundai i10 | BEV, ICEV |
-| **Medium car** (C/D segment) | VinFast VF e34, Toyota Vios | BEV, PHEV, ICEV |
-| **Large car / SUV** | VinFast VF 8/9, Toyota Fortuner | BEV, PHEV, ICEV |
+| **Small car** (A/B segment) | VinFast VF 5, Hyundai i10 | BEV, HEV, ICEV |
+| **Medium car** (C/D segment) | VinFast VF e34, Toyota Vios, Honda City e:HEV, Toyota Camry Hybrid | BEV, HEV, PHEV, ICEV |
+| **Large car / SUV** | VinFast VF 8/9, Toyota Fortuner, Toyota Corolla Cross HEV | BEV, HEV, PHEV, ICEV |
 
 ### Emissions categories
 
@@ -104,11 +104,13 @@ Vehicle mass (excluding battery) determines manufacturing emissions. Values are 
 
 **Four-wheelers (kg, excluding EV battery):**
 
-| Size | BEV | PHEV | ICEV |
-|---|---|---|---|
-| Small | 840 | — | 1,030 |
-| Medium | 1,250 | 1,600 | 1,420 |
-| Large / SUV | 1,530 | 2,010 | 1,740 |
+| Size | BEV | HEV | PHEV | ICEV |
+|---|---|---|---|---|
+| Small | 840 | — | — | 1,030 |
+| Medium | 1,250 | 1,480 | 1,600 | 1,420 |
+| Large / SUV | 1,530 | 1,810 | 2,010 | 1,740 |
+
+*Note: HEV is heavier than ICEV due to electric motor + battery + power electronics, but lighter than PHEV (smaller battery, no plug-in charging system).*
 
 **Two-wheelers (kg, excluding EV battery):**
 
@@ -121,14 +123,16 @@ Vehicle mass (excluding battery) determines manufacturing emissions. Values are 
 
 Material shares by powertrain (from GREET 2022), used to compute manufacturing emissions per material:
 
-| Material | BEV | PHEV | ICEV |
-|---|---|---|---|
-| Steel | 66% | 61% | 63% |
-| Aluminium | 13% | 14% | 13% |
-| Copper | 4% | 6% | 2% |
-| Glass | 2% | 2% | 2% |
-| Plastic | 12% | 13% | 16% |
-| Rubber | 3% | 3% | 4% |
+| Material | BEV | HEV | PHEV | ICEV |
+|---|---|---|---|---|
+| Steel | 66% | 62% | 61% | 63% |
+| Aluminium | 13% | 13% | 14% | 13% |
+| Copper | 4% | 3% | 6% | 2% |
+| Glass | 2% | 2% | 2% | 2% |
+| Plastic | 12% | 16% | 13% | 16% |
+| Rubber | 3% | 4% | 3% | 4% |
+
+*Note: HEV material composition is closer to ICEV than to PHEV/BEV, as it retains a full ICE drivetrain with a smaller electric assist system.*
 
 Manufacturing emission intensities use GREET defaults adjusted to global weighted averages (not US-specific), following IEA's approach.
 
@@ -152,6 +156,7 @@ The dominant EV battery chemistries in the Vietnam market:
 |---|---|---|
 | **LFP** (Lithium Iron Phosphate) | VinFast (most models), Gotion High-Tech partnership, most Chinese-import EVs | ~40% of total battery emissions |
 | **NMC** (Nickel Manganese Cobalt) | VinFast VF 8 (87.7 kWh CATL NMC pack), some imported EVs (Hyundai, BMW) | ~15% of total battery emissions |
+| **NiMH** (Nickel Metal Hydride) | Toyota HEV models (Camry Hybrid, Corolla Cross HEV, Yaris Cross) | Lower than Li-ion per kWh but small capacity |
 | **Lead-acid / small lithium** | Electric scooters (Klara, Yadea, Pega) | Varies widely |
 
 **VinFast battery supply chain:** VinFast partners with Gotion High-Tech (LFP R&D), CATL (NMC cells + skateboard chassis), ProLogium (solid-state R&D), and StoreDot (extreme fast charging). The VinES Battery Manufacturing Facility in Vung Ang Economic Zone ($173.7M, 8 hectares) produces 100,000 battery packs/year. Over 98% of global LFP cathode material and cells are currently produced in China.
@@ -169,6 +174,8 @@ The dominant EV battery chemistries in the Vietnam market:
 | Vehicle | Typical battery (kWh) | Source |
 |---|---|---|
 | Electric scooter | 1.2–3.5 | VinFast Klara S: 1.38 kWh; Yadea: 2.2 kWh |
+| HEV (medium car) | 0.9–1.6 | Toyota Camry Hybrid: 1.6 kWh NiMH; Honda City e:HEV: 0.86 kWh Li-ion |
+| HEV (SUV/crossover) | 1.0–1.8 | Toyota Corolla Cross HEV: 1.3 kWh NiMH; Toyota Yaris Cross: 1.0 kWh |
 | VinFast VF 5 | 37.2 | VinFast specs |
 | VinFast VF e34 | 42 | VinFast specs |
 | VinFast VF 8 | 82 (Eco) / 87.7 (Plus) | VinFast specs |
@@ -267,15 +274,18 @@ Biofuel combustion is treated as carbon-neutral (biogenic carbon), consistent wi
 Fuel economy varies significantly with driving conditions. Vietnam's urban-dominant driving pattern (especially in Hanoi and HCMC) affects both ICEV and BEV efficiency differently:
 
 - **ICEV**: Urban stop-and-go driving **worsens** fuel economy (more idling, braking waste)
+- **HEV**: Urban stop-and-go driving **benefits** HEVs the most — regenerative braking recaptures energy, and the electric motor handles low-speed driving where ICE is least efficient. This makes HEVs particularly well-suited to Vietnamese urban traffic.
 - **BEV**: Urban driving can **improve** efficiency (regenerative braking), but high AC usage in tropical heat **reduces** range
 
 **Four-wheelers (per 100 km):**
 
-| Size | BEV (kWh) | ICEV gasoline (litres) | ICEV diesel (litres) |
-|---|---|---|---|
-| Small | 13–16 | 6.0–7.5 | — |
-| Medium | 16–20 | 7.0–9.0 | 5.5–7.0 |
-| Large / SUV | 20–26 | 9.0–12.0 | 7.0–9.5 |
+| Size | BEV (kWh) | HEV gasoline (litres) | ICEV gasoline (litres) | ICEV diesel (litres) |
+|---|---|---|---|---|
+| Small | 13–16 | 4.0–5.5 | 6.0–7.5 | — |
+| Medium | 16–20 | 4.5–6.0 | 7.0–9.0 | 5.5–7.0 |
+| Large / SUV | 20–26 | 5.5–7.5 | 9.0–12.0 | 7.0–9.5 |
+
+*Note: HEV fuel economy is typically 25–40% better than equivalent ICEV, with the improvement most pronounced in urban driving conditions like those in Hanoi and HCMC. Toyota claims 4.3 L/100km for the Camry Hybrid and 4.5 L/100km for the Corolla Cross HEV (WLTC combined).*
 
 **Two-wheelers (per 100 km):**
 
@@ -309,27 +319,31 @@ A **1.1× correction factor** is applied to WLTC-based fuel economy values (per 
 ```
 Total_lifecycle_emissions (tCO₂e) =
     Vehicle_manufacturing
-  + Battery_manufacturing (BEV/PHEV only)
+  + Battery_manufacturing (BEV/HEV/PHEV only)
   + (WTT_per_km × lifetime_km)
   + (TTW_per_km × lifetime_km)
-  + Battery_replacement (optional, after 10 years)
+  + Battery_replacement (optional, after 10 years; not applicable for HEV)
 ```
+
+*Note: HEV battery manufacturing emissions are included but are minimal (~0.1 t) due to the very small battery size (0.9–1.8 kWh). HEV batteries typically last the lifetime of the vehicle and do not require replacement.*
 
 ### Example: Medium car, 200,000 km lifetime, Vietnam 2025 grid
 
-| Component | BEV (VF e34-class) | ICEV (Vios-class) |
-|---|---|---|
-| Vehicle manufacturing | 6.5 t | 7.5 t |
-| Battery manufacturing (42 kWh LFP) | 2.5 t | — |
-| WTT (fuel production) | 24.0 t ¹ | 8.0 t |
-| TTW (tailpipe) | 0 t | 26.6 t ² |
-| **Total** | **33.0 t** | **42.1 t** |
-| **Per km** | **165 g/km** | **211 g/km** |
+| Component | BEV (VF e34-class) | HEV (Camry Hybrid-class) | ICEV (Vios-class) |
+|---|---|---|---|
+| Vehicle manufacturing | 6.5 t | 7.8 t | 7.5 t |
+| Battery manufacturing | 2.5 t (42 kWh LFP) | 0.1 t (1.6 kWh NiMH) | — |
+| WTT (fuel production) | 24.0 t ¹ | 5.2 t ³ | 8.0 t |
+| TTW (tailpipe) | 0 t | 17.2 t ⁴ | 26.6 t ² |
+| **Total** | **33.0 t** | **30.3 t** | **42.1 t** |
+| **Per km** | **165 g/km** | **152 g/km** | **211 g/km** |
 
 ¹ 42 kWh battery, 18 kWh/100km × 1.02 loss × 200,000 km × 0.78 tCO₂e/MWh grid EF (2025 est.)
 ² 8 L/100km × 200,000 km × 2.2 kg CO₂/L × (1 + 0.3 WTT ratio)
+³ 5.2 L/100km × 200,000 km × 0.6 kg CO₂e/L WTT factor (gasoline only, no grid dependency)
+⁴ 5.2 L/100km × 200,000 km × 2.2 kg CO₂/L × (1 − 0.05 biofuel credit) × correction
 
-**Key insight:** Even with Vietnam's coal-heavy grid (2025), the BEV already has ~22% lower lifecycle emissions than the ICEV. This gap widens dramatically as the grid decarbonizes — by 2030, the BEV advantage could reach 35–50%.
+**Key insight:** On Vietnam's coal-heavy grid (2025), the HEV actually edges out the BEV in lifecycle emissions (152 vs. 165 g/km) because HEVs achieve dramatic fuel savings without any grid electricity dependency. As Vietnam decarbonizes its grid, the BEV advantage grows — by 2030, BEV drops to ~120 g/km while HEV remains at ~152 g/km. By 2050, the BEV reaches ~60 g/km. The HEV's advantage is that it delivers immediate, grid-independent emission reductions with no charging infrastructure required — a significant practical advantage in Vietnam where public charging remains limited outside major cities.
 
 ### Two-wheeler comparison
 
@@ -407,11 +421,12 @@ RON95-III has fluctuated between 19,006 and 30,690 VND/L in 2025–2026. Using m
 
 | Vehicle | Consumption | Fuel price (RON 95-III) | Cost per 100 km |
 |---|---|---|---|
-| Fuel-efficient (Vios) | 7 L | ~25,000 VND/L | 175,000 VND (~$7.00) |
-| Average sedan | 8.5 L | ~25,000 VND/L | 212,500 VND (~$8.50) |
-| SUV | 11 L | ~25,000 VND/L | 275,000 VND (~$11.00) |
+| HEV sedan (Camry Hybrid) | 4.5–5.5 L | ~25,000 VND/L | 112,500–137,500 VND (~$4.50–$5.50) |
+| Fuel-efficient ICEV (Vios) | 7 L | ~25,000 VND/L | 175,000 VND (~$7.00) |
+| Average ICEV sedan | 8.5 L | ~25,000 VND/L | 212,500 VND (~$8.50) |
+| ICEV SUV | 11 L | ~25,000 VND/L | 275,000 VND (~$11.00) |
 
-**Running cost advantage:** BEV home charging is **3–4× cheaper per km** than petrol in Vietnam. Even at the highest IBR tier, the BEV fuel cost advantage is overwhelming.
+**Running cost ranking:** BEV home charging (51k–58k VND/100km) is cheapest, followed by HEV (113k–138k VND/100km) at roughly **half the cost of an equivalent ICEV**. The HEV advantage over ICEV requires no infrastructure change — just fuelling at the same petrol station with fewer visits.
 
 **Two-wheeler running cost:**
 
@@ -438,15 +453,17 @@ TCO = Purchase_price
 
 **Vietnam-specific TCO factors:**
 
-| Factor | BEV advantage | Notes |
-|---|---|---|
-| Registration tax | BEV exempt 2022–2027 (Decree 10/2022) | Saves 10–15% of vehicle price |
-| Import duty | 0% for BEV (vs. 70% for CBU ICEV) | Only for imports; VinFast produced domestically |
-| Road use fee | BEV exempt | Annual savings of 1.5–3.6M VND |
-| Maintenance | BEV ~40% lower | No oil changes, fewer brake replacements, simpler drivetrain |
-| Fuel cost | BEV 65–75% lower | As computed above |
-| Battery degradation / replacement | BEV risk | VinFast offers battery subscription option |
-| Residual value | Uncertain for BEV | Limited secondary market data in Vietnam |
+| Factor | BEV | HEV | ICEV | Notes |
+|---|---|---|---|---|
+| Registration tax | Exempt 2022–2027 | Standard rate | Standard rate | BEV saves 10–15% of vehicle price |
+| Special consumption tax | 1–3% (through 2027) | 70% of ICEV rate | 35–150% by engine size | HEV gets partial tax benefit from 2026 |
+| Import duty | 0% | 70% (CBU) | 70% (CBU) | Applies to imports only |
+| Road use fee | Exempt | Standard | Standard | BEV saves 1.5–3.6M VND/year |
+| Maintenance | ~40% lower | ~15% lower | Baseline | HEV has regenerative braking (less brake wear) but still has ICE maintenance |
+| Fuel cost | 65–75% lower | 25–40% lower | Baseline | HEV saves via better fuel economy, no electricity cost |
+| Battery replacement | Risk (after 10yr) | Negligible | N/A | HEV battery is small, lasts vehicle lifetime; BEV: VinFast offers subscription |
+| Residual value | Uncertain | Strong | Established | Toyota HEVs hold value well globally; BEV secondary market still forming |
+| Purchase price | Premium | Moderate premium | Baseline | HEV typically 15–25% over ICEV; BEV 30–60% over ICEV (before incentives) |
 
 ### 8.5 Future electricity price trajectory
 
@@ -473,8 +490,9 @@ The calculator should allow users to adjust these parameters:
 | Battery chemistry | LFP | LFP / NMC | NMC ~50% higher mfg emissions |
 | Fuel economy (ICEV) | 8 L/100km | 5–15 L/100km | Worse ICEV economy favours BEV |
 | BEV efficiency | 18 kWh/100km | 12–30 kWh/100km | Worse BEV efficiency narrows gap |
+| HEV fuel economy | 5.2 L/100km | 4.0–7.0 L/100km | Better HEV economy narrows gap vs. BEV |
 | PHEV utility factor | 35% | 0–70% | More electric driving favours PHEV |
-| AC climate penalty | +12% (BEV), +7% (ICEV) | 0–20% | Tropical climate correction |
+| AC climate penalty | +12% (BEV), +7% (ICEV/HEV) | 0–20% | Tropical climate correction |
 
 ### Break-even grid emission factor
 
@@ -484,6 +502,17 @@ The grid EF at which a BEV and ICEV have equal lifecycle emissions (for a medium
 - **LFP battery**: break-even at ~1.15 tCO₂e/MWh
 
 Vietnam's current grid (0.78–0.90) is **well below the break-even point**, meaning BEVs are already cleaner even on today's grid.
+
+### BEV vs. HEV crossover point
+
+The grid EF at which a BEV becomes cleaner than an HEV (medium car, 200,000 km, LFP battery):
+
+- **Crossover at ~0.65 tCO₂e/MWh** — below this, BEV is cleaner than HEV
+- Vietnam's current grid (0.78–0.90) is **above** this crossover, meaning HEV currently has a slight lifecycle advantage
+- Under PDP8 2030 projections (0.55–0.65), BEV and HEV reach approximate parity
+- By 2040+, BEV decisively outperforms HEV
+
+This makes HEV a compelling "bridge technology" for Vietnam — delivering immediate emissions reductions while the grid decarbonizes, after which BEV takes the lead.
 
 ---
 
@@ -524,7 +553,7 @@ Vietnam's current grid (0.78–0.90) is **well below the break-even point**, mea
 
 The simplest implementation is a single-page web app where the user:
 1. Selects **vehicle type** (scooter / small car / medium car / SUV)
-2. Selects **powertrain** (BEV / PHEV / ICEV)
+2. Selects **powertrain** (BEV / HEV / PHEV / ICEV)
 3. Sees a default Vietnam-specific result with a breakdown bar chart
 4. Can toggle **grid scenario** (current / 2030 CPS / 2030 ADS / 2050 NZP)
 5. Can adjust sliders for driving distance, lifetime, fuel economy
@@ -532,8 +561,9 @@ The simplest implementation is a single-page web app where the user:
 **Key editorial outputs:**
 - "Mỗi km đi xe điện thải ra bao nhiêu CO₂?" (How much CO₂ per km for an EV?)
 - Side-by-side lifecycle comparison: VinFast VF 5 vs. Hyundai i10
+- HEV vs. BEV vs. ICEV: Toyota Camry Hybrid vs. VinFast VF e34 vs. Toyota Vios — which wins in Vietnam today?
 - Electric scooter vs. Honda Wave — the decisive case
-- Future projection: how the answer changes as Vietnam's grid gets cleaner
+- Future projection: how the answer changes as Vietnam's grid gets cleaner (and when BEV overtakes HEV)
 
 ### Data pipeline
 
@@ -552,6 +582,8 @@ Output                     → Stacked bar chart (Plotly / D3 / simple SVG)
 | Vietnam-specific vehicle manufacturing EF | Use GREET defaults (acceptable approximation) | Low |
 | Actual VinFast battery chemistry & sourcing | VinFast press releases / CATL partnership announcements | Medium |
 | Real-world fuel economy in Vietnamese conditions | VinFast community forums; Ministry of Transport test data | High |
+| Real-world HEV fuel economy in Vietnam | Toyota Vietnam; owner forums; MOIT test data | High |
+| HEV sales data in Vietnam | VAMA; Toyota Vietnam; Honda Vietnam | Medium |
 | Updated grid EF (post-PDP8 approval) | EVN annual report or MOIT statistics | High |
 | E-scooter battery lifecycle data | Manufacturer warranty terms; field surveys | Medium |
 
@@ -561,15 +593,21 @@ Output                     → Stacked bar chart (Plotly / D3 / simple SVG)
 
 Based on this methodology, the headline findings for a Vietnam audience are:
 
-1. **EVs are already cleaner in Vietnam** — even with the coal-heavy grid, a BEV car produces ~20% less lifecycle CO₂ than a comparable ICEV. This is because zero tailpipe emissions more than compensate for the higher upstream electricity emissions.
+1. **All electrified powertrains are cleaner than ICEV in Vietnam** — BEV (~22% less), HEV (~28% less), even with the coal-heavy grid. The story is not just about full electric.
 
-2. **Electric scooters are a clear win** — 60%+ reduction vs. petrol scooters. This is the most impactful story for Vietnamese readers because motorbikes are the dominant transport mode.
+2. **HEV is currently the lifecycle champion for cars** — on Vietnam's 2025 grid (0.78–0.90 tCO₂e/MWh), an HEV like the Camry Hybrid produces ~152 g/km vs. BEV at ~165 g/km, because HEVs achieve major fuel savings without any grid electricity dependency. This finding is counterintuitive and editorially powerful.
 
-3. **The gap will widen dramatically** — under PDP8 scenarios, the BEV advantage grows to 35–50% by 2030 and 70%+ by 2040 as coal exits the grid.
+3. **But BEV will overtake HEV as the grid cleans up** — the crossover happens around 0.65 tCO₂e/MWh, expected by 2030 under PDP8. By 2040–2050, BEV is decisively cleaner. HEV is a bridge technology; BEV is the destination.
 
-4. **Battery size matters** — a VF 9 (123 kWh battery) has significantly higher manufacturing emissions than a VF 5 (37 kWh). Right-sizing the vehicle is important.
+4. **Electric scooters are a clear win** — 60%+ reduction vs. petrol scooters regardless of grid mix. This is the most impactful story for Vietnamese readers because motorbikes are the dominant transport mode.
 
-5. **Vietnam's tropical climate is a double-edged sword** — continuous AC use increases BEV energy consumption by ~10–15%, partially offsetting the efficiency advantage. But it also increases ICEV fuel consumption, so the relative comparison is less affected than the absolute numbers.
+5. **The gap will widen dramatically** — under PDP8 scenarios, the BEV advantage over ICEV grows to 35–50% by 2030 and 70%+ by 2040 as coal exits the grid.
+
+6. **Battery size matters** — a VF 9 (123 kWh battery) has significantly higher manufacturing emissions than a VF 5 (37 kWh). Right-sizing the vehicle is important.
+
+7. **Vietnam's tropical climate is a double-edged sword** — continuous AC use increases BEV energy consumption by ~10–15%, partially offsetting the efficiency advantage. But it also increases ICEV and HEV fuel consumption, so the relative comparison is less affected than the absolute numbers.
+
+8. **HEV requires zero infrastructure change** — unlike BEV which needs charging infrastructure (still limited outside Hanoi/HCMC), HEV uses existing petrol stations. For provincial Vietnam, this practical advantage is significant.
 
 ---
 
