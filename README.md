@@ -16,9 +16,13 @@ Central index for all environmental and disaster data projects across the Spotli
 
 | Repo | Description | Data source | Status |
 |---|---|---|---|
-| [lqtue/environmental-data-hub](https://github.com/lqtue/environmental-data-hub) | Real-time typhoon dashboard + historical landfall analysis | JTWC, JMA, IBTrACS (NOAA), NASA POWER | Active — GitHub Actions runs every 6h during storm season |
+| [lqtue/environmental-data-hub](https://github.com/lqtue/environmental-data-hub) | Real-time typhoon dashboard + historical landfall analysis | JTWC, JMA, IBTrACS (NOAA), NASA POWER | Active |
 
-**Scripts available:** `typhoon/` module contains all processing scripts. Colab wrapper at `notebooks/typhoon_analysis.ipynb`.
+**Scripts available:** `typhoon/` module contains all processing scripts.
+
+**Colab (dành cho biên tập viên — không cần cài đặt):**
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lqtue/environmental-data-hub/blob/main/notebooks/typhoon_analysis.ipynb)
 
 ### Crawlers (Unified)
 
