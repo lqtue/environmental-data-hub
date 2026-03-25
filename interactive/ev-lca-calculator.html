@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>So sánh phát thải vòng đời xe — Vietnam LCA Calculator</title>
+<style>
+  :root {
+    --bg: #fafaf9;
+    --card: #ffffff;
+    --border: #e5e5e4;
+    --text: #1c1917;
+    --muted: #78716c;
+    --accent: #16a34a;
+    --bev: #2563eb;
+    --hev: #8b5cf6;
+    --phev: #0891b2;
+    --icev: #dc2626;
+    --mfg: #f59e0b;
+    --battery: #8b5cf6;
+    --wtt: #3b82f6;
+    --ttw: #ef4444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 0 16px;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 0 64px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.875rem;
+    margin-bottom: 32px;
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  @media (max-width: 600px) {
+    .controls { grid-template-columns: 1fr; }
+  }
+
+  .control-group label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 4px;
+  }
+
+  .btn-group button {
+    flex: 1;
+    padding: 8px 4px;
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--text);
+  }
+
+  .btn-group button:hover { border-color: var(--accent); }
+  .btn-group button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  .sliders {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
+    margin-bottom: 32px;
+    padding: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+
+  @media (max-width: 600px) {
+    .sliders { grid-template-columns: 1fr; }
+  }
+
+  .slider-group label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .slider-group label span.val {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  input[type="range"] {
+    width: 100%;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+  }
+
+  .chart-section {
+    margin-bottom: 32px;
+  }
+
+  .chart-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  .bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .bar-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 70px;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .bar-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .bar-label.bev { color: var(--bev); }
+  .bar-label.hev { color: var(--hev); }
+  .bar-label.phev { color: var(--phev); }
+  .bar-label.icev { color: var(--icev); }
+
+  .bar-track {
+    height: 36px;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    background: #f5f5f4;
+    position: relative;
+  }
+
+  .bar-seg {
+    height: 100%;
+    transition: width 0.4s ease;
+    position: relative;
+  }
+
+  .bar-seg.mfg { background: var(--mfg); }
+  .bar-seg.bat { background: var(--battery); }
+  .bar-seg.wtt { background: var(--wtt); }
+  .bar-seg.ttw { background: var(--ttw); }
+
+  .bar-value {
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
+
+  .insight-box {
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .insight-box strong { color: var(--accent); }
+
+  .cost-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    margin-top: 16px;
+  }
+
+  .cost-table th {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--border);
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .cost-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cost-table tr td:first-child { font-weight: 600; }
+
+  .cost-table .highlight { background: #f0fdf4; }
+
+  .grid-timeline {
+    margin-top: 32px;
+    padding: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+
+  .timeline-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .timeline-track {
+    position: relative;
+    height: 80px;
+    margin: 0 40px;
+  }
+
+  .timeline-line {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+  }
+
+  .timeline-marker {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    text-align: center;
+  }
+
+  .timeline-marker .dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    margin: 14px auto 6px;
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px var(--accent);
+    background: var(--accent);
+  }
+
+  .timeline-marker .dot.current { background: var(--icev); box-shadow: 0 0 0 2px var(--icev); }
+
+  .timeline-marker .yr {
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .timeline-marker .ef {
+    font-size: 0.65rem;
+    color: var(--muted);
+  }
+
+  .footer {
+    margin-top: 48px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Xe nào "xanh" hơn ở Việt Nam?</h1>
+  <p class="subtitle">So sánh phát thải khí nhà kính vòng đời — BEV / HEV / PHEV / ICEV</p>
+
+  <div class="controls">
+    <div class="control-group">
+      <label>Loại xe</label>
+      <div class="btn-group" id="vehicle-type">
+        <button data-val="scooter">Xe máy</button>
+        <button data-val="small">Xe nhỏ</button>
+        <button data-val="medium" class="active">Xe trung</button>
+        <button data-val="large">SUV</button>
+      </div>
+    </div>
+    <div class="control-group">
+      <label>Kịch bản lưới điện</label>
+      <div class="btn-group" id="grid-scenario">
+        <button data-val="2025" class="active">2025</button>
+        <button data-val="2030">2030</button>
+        <button data-val="2040">2040</button>
+        <button data-val="2050">2050</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sliders">
+    <div class="slider-group">
+      <label>Quãng đường đời xe <span class="val" id="dist-val">200,000 km</span></label>
+      <input type="range" id="dist" min="50000" max="400000" step="10000" value="200000">
+    </div>
+    <div class="slider-group">
+      <label>Pin BEV (kWh) <span class="val" id="bat-val">42</span></label>
+      <input type="range" id="bat" min="1" max="130" step="1" value="42">
+    </div>
+    <div class="slider-group">
+      <label>Tiêu hao ICEV (L/100km) <span class="val" id="icev-fc-val">8.0</span></label>
+      <input type="range" id="icev-fc" min="1.5" max="15" step="0.5" value="8">
+    </div>
+    <div class="slider-group">
+      <label>Tiêu hao BEV (kWh/100km) <span class="val" id="bev-fc-val">18</span></label>
+      <input type="range" id="bev-fc" min="1.5" max="30" step="0.5" value="18">
+    </div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-title">Phát thải vòng đời (tCO₂e)</div>
+    <div class="bar-chart" id="chart"></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--mfg)"></div> Sản xuất xe</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--battery)"></div> Sản xuất pin</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--wtt)"></div> Nhiên liệu (WTT)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--ttw)"></div> Ống xả (TTW)</div>
+    </div>
+  </div>
+
+  <div class="insight-box" id="insight"></div>
+
+  <div class="chart-section" style="margin-top:32px">
+    <div class="chart-title">Chi phí nhiên liệu mỗi 100 km (VND)</div>
+    <table class="cost-table" id="cost-table"></table>
+  </div>
+
+  <div class="grid-timeline">
+    <div class="timeline-title">Lộ trình giảm phát thải lưới điện Việt Nam</div>
+    <div class="timeline-track">
+      <div class="timeline-line"></div>
+      <div class="timeline-marker" style="left:0%">
+        <div class="dot current"></div>
+        <div class="yr">2025</div>
+        <div class="ef">0.78</div>
+      </div>
+      <div class="timeline-marker" style="left:33%">
+        <div class="dot"></div>
+        <div class="yr">2030</div>
+        <div class="ef">0.60</div>
+      </div>
+      <div class="timeline-marker" style="left:66%">
+        <div class="dot"></div>
+        <div class="yr">2040</div>
+        <div class="ef">0.20</div>
+      </div>
+      <div class="timeline-marker" style="left:100%">
+        <div class="dot"></div>
+        <div class="yr">2050</div>
+        <div class="ef">0.05</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Phương pháp: IEA LCA Calculator, GREET (Argonne), điều chỉnh cho thị trường Việt Nam.
+    Nguồn dữ liệu: World Bank CCDR 2022, EVN, VAMA, VinFast, PDP8 sửa đổi (QĐ 768/2025).
+    <br>Spotlight Data Team — VnExpress, 2026.
+  </div>
+</div>
+
+<script>
+const GRID_EF = { 2025: 0.78, 2030: 0.60, 2040: 0.20, 2050: 0.05 };
+const GASOLINE_CO2_PER_L = 2.2;
+const WTT_RATIO_GASOLINE = 0.3;
+const CHARGING_LOSS = 1.02;
+const FUEL_PRICE_VND = 25000; // VND/L RON95
+const ELEC_PRICE_VND = 2860; // VND/kWh tier 4
+
+// Vehicle configs: { mfg_t, bat_kwh, bev_kwh100, hev_l100, phev_l100, icev_l100, icev_d100, lifetime_km }
+const VEHICLES = {
+  scooter: {
+    label: 'Xe máy',
+    powertrains: ['bev', 'icev'],
+    mfg: { bev: 0.4, icev: 0.5 },
+    bat_kwh: { bev: 2 },
+    fc: { bev: 2, icev: 2 },
+    lifetime: 100000,
+    examples: { bev: 'VinFast Klara', icev: 'Honda Wave' }
+  },
+  small: {
+    label: 'Xe nhỏ (A/B)',
+    powertrains: ['bev', 'hev', 'icev'],
+    mfg: { bev: 4.5, hev: 5.5, icev: 5.2 },
+    bat_kwh: { bev: 37.2, hev: 1.2 },
+    fc: { bev: 14.5, hev: 4.8, icev: 6.8 },
+    lifetime: 200000,
+    examples: { bev: 'VinFast VF 5', hev: 'Toyota Yaris Cross HEV', icev: 'Hyundai i10' }
+  },
+  medium: {
+    label: 'Xe trung (C/D)',
+    powertrains: ['bev', 'hev', 'phev', 'icev'],
+    mfg: { bev: 6.5, hev: 7.8, phev: 8.5, icev: 7.5 },
+    bat_kwh: { bev: 42, hev: 1.6, phev: 12 },
+    fc: { bev: 18, hev: 5.2, phev_elec: 16, phev_gas: 6.5, icev: 8 },
+    lifetime: 200000,
+    examples: { bev: 'VinFast VF e34', hev: 'Toyota Camry Hybrid', phev: 'BYD Song Plus', icev: 'Toyota Vios' }
+  },
+  large: {
+    label: 'SUV / Xe lớn',
+    powertrains: ['bev', 'hev', 'phev', 'icev'],
+    mfg: { bev: 8.0, hev: 9.5, phev: 10.5, icev: 9.2 },
+    bat_kwh: { bev: 82, hev: 1.3, phev: 18 },
+    fc: { bev: 23, hev: 6.5, phev_elec: 20, phev_gas: 8.5, icev: 10.5 },
+    lifetime: 200000,
+    examples: { bev: 'VinFast VF 8', hev: 'Toyota Corolla Cross HEV', phev: 'BYD Tang', icev: 'Toyota Fortuner' }
+  }
+};
+
+const POWERTRAIN_LABELS = {
+  bev: 'BEV', hev: 'HEV', phev: 'PHEV', icev: 'ICEV'
+};
+
+const POWERTRAIN_COLORS = {
+  bev: 'var(--bev)', hev: 'var(--hev)', phev: 'var(--phev)', icev: 'var(--icev)'
+};
+
+const BAT_INTENSITY = { lfp: 60, nimh: 50, nmc: 90 };
+
+let state = {
+  vehicleType: 'medium',
+  gridScenario: '2025',
+  lifetime: 200000,
+  batOverride: null,
+  icevFcOverride: null,
+  bevFcOverride: null
+};
+
+function getState() {
+  return {
+    ...state,
+    lifetime: +document.getElementById('dist').value,
+    batKwh: +document.getElementById('bat').value,
+    icevFc: +document.getElementById('icev-fc').value,
+    bevFc: +document.getElementById('bev-fc').value,
+  };
+}
+
+function calc(powertrain, s) {
+  const v = VEHICLES[s.vehicleType];
+  const gridEf = GRID_EF[s.gridScenario];
+  const lifetime = s.lifetime;
+
+  const mfg = v.mfg[powertrain] || 0;
+
+  let batKwh = 0;
+  let batIntensity = BAT_INTENSITY.lfp;
+  if (powertrain === 'bev') {
+    batKwh = s.batKwh;
+  } else if (powertrain === 'hev') {
+    batKwh = v.bat_kwh.hev || 0;
+    batIntensity = BAT_INTENSITY.nimh;
+  } else if (powertrain === 'phev') {
+    batKwh = v.bat_kwh.phev || 0;
+  }
+  const battery = batKwh * batIntensity / 1000;
+
+  let wtt = 0, ttw = 0, fuelCostPer100 = 0;
+
+  if (powertrain === 'bev') {
+    const kwh100 = s.bevFc;
+    wtt = (kwh100 / 100) * CHARGING_LOSS * lifetime * gridEf / 1000;
+    ttw = 0;
+    fuelCostPer100 = kwh100 * ELEC_PRICE_VND;
+  } else if (powertrain === 'hev') {
+    const l100 = v.fc.hev;
+    ttw = (l100 / 100) * lifetime * GASOLINE_CO2_PER_L / 1000;
+    wtt = ttw * WTT_RATIO_GASOLINE;
+    fuelCostPer100 = l100 * FUEL_PRICE_VND;
+  } else if (powertrain === 'phev') {
+    const uf = 0.35;
+    const elecKwh100 = v.fc.phev_elec || 16;
+    const gasL100 = v.fc.phev_gas || 6.5;
+    const wttElec = uf * (elecKwh100 / 100) * CHARGING_LOSS * lifetime * gridEf / 1000;
+    const ttwGas = (1 - uf) * (gasL100 / 100) * lifetime * GASOLINE_CO2_PER_L / 1000;
+    const wttGas = ttwGas * WTT_RATIO_GASOLINE;
+    wtt = wttElec + wttGas;
+    ttw = ttwGas;
+    fuelCostPer100 = uf * elecKwh100 * ELEC_PRICE_VND + (1 - uf) * gasL100 * FUEL_PRICE_VND;
+  } else {
+    const l100 = s.icevFc;
+    ttw = (l100 / 100) * lifetime * GASOLINE_CO2_PER_L / 1000;
+    wtt = ttw * WTT_RATIO_GASOLINE;
+    fuelCostPer100 = l100 * FUEL_PRICE_VND;
+  }
+
+  const total = mfg + battery + wtt + ttw;
+  const perKm = (total / lifetime) * 1e6; // g/km
+
+  return { mfg, battery, wtt, ttw, total, perKm, fuelCostPer100, example: v.examples[powertrain] || '' };
+}
+
+function render() {
+  const s = getState();
+  const v = VEHICLES[s.vehicleType];
+
+  // Update slider labels
+  document.getElementById('dist-val').textContent = s.lifetime.toLocaleString() + ' km';
+  document.getElementById('bat-val').textContent = s.batKwh;
+  document.getElementById('icev-fc-val').textContent = s.icevFc.toFixed(1);
+  document.getElementById('bev-fc-val').textContent = s.bevFc.toFixed(1);
+
+  // Calculate all powertrains
+  const results = {};
+  let maxTotal = 0;
+  v.powertrains.forEach(pt => {
+    results[pt] = calc(pt, s);
+    if (results[pt].total > maxTotal) maxTotal = results[pt].total;
+  });
+
+  // Render bar chart
+  const chart = document.getElementById('chart');
+  chart.innerHTML = '';
+
+  v.powertrains.forEach(pt => {
+    const r = results[pt];
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+
+    const label = document.createElement('div');
+    label.className = `bar-label ${pt}`;
+    label.innerHTML = `${POWERTRAIN_LABELS[pt]}<br><span style="font-size:0.65rem;font-weight:400;color:var(--muted)">${r.example}</span>`;
+
+    const track = document.createElement('div');
+    track.className = 'bar-track';
+
+    const pct = (val) => (val / maxTotal * 100).toFixed(1) + '%';
+
+    const segs = [
+      { cls: 'mfg', val: r.mfg, label: 'Sản xuất xe' },
+      { cls: 'bat', val: r.battery, label: 'Pin' },
+      { cls: 'wtt', val: r.wtt, label: 'WTT' },
+      { cls: 'ttw', val: r.ttw, label: 'TTW' },
+    ];
+
+    segs.forEach(seg => {
+      if (seg.val <= 0) return;
+      const el = document.createElement('div');
+      el.className = `bar-seg ${seg.cls}`;
+      el.style.width = pct(seg.val);
+      el.title = `${seg.label}: ${seg.val.toFixed(1)} t`;
+      track.appendChild(el);
+    });
+
+    const value = document.createElement('div');
+    value.className = 'bar-value';
+    value.textContent = r.total.toFixed(1) + ' t';
+
+    row.appendChild(label);
+    row.appendChild(track);
+    row.appendChild(value);
+    chart.appendChild(row);
+
+    // Per-km line
+    const subRow = document.createElement('div');
+    subRow.className = 'bar-row';
+    subRow.innerHTML = `<div></div><div style="font-size:0.7rem;color:var(--muted);padding-left:2px">${Math.round(r.perKm)} g CO₂e/km</div><div></div>`;
+    chart.appendChild(subRow);
+  });
+
+  // Cost table
+  const costTable = document.getElementById('cost-table');
+  let lowest = Infinity, lowestPt = '';
+  v.powertrains.forEach(pt => {
+    if (results[pt].fuelCostPer100 < lowest) {
+      lowest = results[pt].fuelCostPer100;
+      lowestPt = pt;
+    }
+  });
+
+  let tableHtml = `<tr><th>Loại</th><th>VND / 100 km</th><th>So với ICEV</th></tr>`;
+  v.powertrains.forEach(pt => {
+    const r = results[pt];
+    const icevCost = results.icev ? results.icev.fuelCostPer100 : r.fuelCostPer100;
+    const saving = icevCost > 0 ? Math.round((1 - r.fuelCostPer100 / icevCost) * 100) : 0;
+    const savingText = pt === 'icev' ? '—' : (saving > 0 ? `Tiết kiệm ${saving}%` : `+${Math.abs(saving)}%`);
+    const hl = pt === lowestPt ? ' class="highlight"' : '';
+    tableHtml += `<tr${hl}>
+      <td style="color:${POWERTRAIN_COLORS[pt]}">${POWERTRAIN_LABELS[pt]}</td>
+      <td>${Math.round(r.fuelCostPer100).toLocaleString()}</td>
+      <td>${savingText}</td>
+    </tr>`;
+  });
+  costTable.innerHTML = tableHtml;
+
+  // Insight
+  const insight = document.getElementById('insight');
+  const sorted = [...v.powertrains].sort((a, b) => results[a].total - results[b].total);
+  const best = sorted[0];
+  const worst = sorted[sorted.length - 1];
+  const reduction = Math.round((1 - results[best].total / results[worst].total) * 100);
+
+  let insightHtml = '';
+  if (v.powertrains.includes('hev') && v.powertrains.includes('bev')) {
+    const bevR = results.bev;
+    const hevR = results.hev;
+    const icevR = results.icev;
+
+    if (hevR.total < bevR.total) {
+      insightHtml = `<strong>Với lưới điện ${s.gridScenario}:</strong> HEV (${hevR.example}) phát thải ít nhất — <strong>${Math.round(hevR.perKm)} g/km</strong>, thấp hơn BEV (${Math.round(bevR.perKm)} g/km) vì không phụ thuộc lưới điện than. Cả hai đều sạch hơn ICEV (${Math.round(icevR.perKm)} g/km) tới <strong>${reduction}%</strong>.`;
+      if (s.gridScenario === '2025') {
+        insightHtml += `<br><br>Khi lưới điện sạch hơn (dự kiến ~2030 theo PDP8), BEV sẽ vượt HEV. HEV là công nghệ cầu nối — BEV là đích đến.`;
+      }
+    } else {
+      insightHtml = `<strong>Với lưới điện ${s.gridScenario}:</strong> BEV (${bevR.example}) giờ đã phát thải ít nhất — <strong>${Math.round(bevR.perKm)} g/km</strong>, thấp hơn HEV (${Math.round(hevR.perKm)} g/km). Lưới điện đã đủ sạch để xe thuần điện chiến thắng.`;
+    }
+  } else {
+    insightHtml = `<strong>${POWERTRAIN_LABELS[best]}</strong> (${results[best].example}) phát thải thấp nhất: <strong>${Math.round(results[best].perKm)} g/km</strong>, giảm <strong>${reduction}%</strong> so với ${POWERTRAIN_LABELS[worst]}.`;
+  }
+  insight.innerHTML = insightHtml;
+}
+
+// Event listeners
+document.querySelectorAll('#vehicle-type button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#vehicle-type button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.vehicleType = btn.dataset.val;
+
+    // Update slider defaults
+    const v = VEHICLES[state.vehicleType];
+    if (v.bat_kwh.bev) {
+      document.getElementById('bat').value = v.bat_kwh.bev;
+    }
+    if (v.fc.icev) {
+      document.getElementById('icev-fc').value = v.fc.icev;
+    }
+    if (v.fc.bev) {
+      document.getElementById('bev-fc').value = v.fc.bev;
+    }
+    document.getElementById('dist').value = v.lifetime;
+    render();
+  });
+});
+
+document.querySelectorAll('#grid-scenario button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#grid-scenario button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.gridScenario = btn.dataset.val;
+    render();
+  });
+});
+
+document.querySelectorAll('input[type="range"]').forEach(slider => {
+  slider.addEventListener('input', render);
+});
+
+// Initial render
+render();
+</script>
+</body>
+</html>
