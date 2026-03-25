@@ -36,19 +36,22 @@ Central index for all environmental and disaster data projects across the Spotli
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lqtue/environmental-data-hub/blob/main/notebooks/crawlers.ipynb)
 
-### Water Levels & Reservoirs
+### Water Levels, Reservoirs & Flood/Landslide Warnings
 
 | Repo | Description | Data source | Status |
 |---|---|---|---|
 | [vnexpress-spotlight/WaterDashboard](https://github.com/vnexpress-spotlight/WaterDashboard) | River water levels (16 stations) + lake storage (22 reservoirs) across Central Vietnam | VNDMS, Thuy Loi Vietnam | Active — GitHub Actions runs hourly, auto-creates PRs |
+| [vnexpress-spotlight/CentralVN.Landslide](https://github.com/vnexpress-spotlight/CentralVN.Landslide) | Commune-level landslide + flash flood risk map (Huế & Đà Nẵng) | NCHMF | Active — hourly snapshots via WaterDashboard crawler |
 
 **Basins covered:** Sê San · Hương–Bồ · Vu Gia–Thu Bồn · Trà Khúc · Kôn–Hà Thanh · Ba · Cái
 
-### Flash Flood & Landslide Warnings
+### EV Transition
 
 | Repo | Description | Data source | Status |
 |---|---|---|---|
-| [vnexpress-spotlight/CentralVN.Landslide](https://github.com/vnexpress-spotlight/CentralVN.Landslide) | Commune-level landslide + flash flood risk map (Huế & Đà Nẵng) | NCHMF | Active — hourly snapshots via WaterDashboard crawler |
+| [lqtue/environmental-data-hub](https://github.com/lqtue/environmental-data-hub) | Vietnam-specific lifecycle GHG comparison: BEV vs PHEV vs ICEV for cars and motorbikes | IEA LCA methodology, GREET, Vietnam grid data | In development |
+
+**Methodology:** `docs/ev-lca-methodology-vietnam.md` — covers vehicle manufacturing, battery production, well-to-tank (Vietnam coal-heavy grid), and tank-to-wheel emissions for the Vietnamese market, including two-wheelers.
 
 ### Flood Mapping
 
@@ -98,6 +101,7 @@ Central index for all environmental and disaster data projects across the Spotli
 | Guide | What it covers |
 |---|---|
 | [docs/disaster-data-guide.md](docs/disaster-data-guide.md) | Full technical guide: all 7 data sources, API endpoints, processing scripts, typical workflows, known limitations |
+| [docs/ev-lca-methodology-vietnam.md](docs/ev-lca-methodology-vietnam.md) | Vietnam-adapted lifecycle GHG methodology: vehicle manufacturing, battery production, grid emissions, fuel economy assumptions |
 
 ---
 
@@ -105,10 +109,10 @@ Central index for all environmental and disaster data projects across the Spotli
 
 | Source | Website | Data type | Access | Used by |
 |---|---|---|---|---|
-| **JTWC** | metoc.navy.mil/jtwc | Real-time typhoon track + forecast | Public (RSS + text/KMZ) | 2025Typhoon |
-| **JMA** | jma.go.jp | Typhoon position fallback | Public (JS endpoint, active season only) | 2025Typhoon |
-| **IBTrACS** | ncei.noaa.gov | Historical storm tracks (1841–present) | Public download | 2025Typhoon |
-| **NASA POWER** | power.larc.nasa.gov | Daily precipitation + 30-year climatology | Public API, no key needed | 2025Typhoon |
+| **JTWC** | metoc.navy.mil/jtwc | Real-time typhoon track + forecast | Public (RSS + text/KMZ) | environmental-data-hub |
+| **JMA** | jma.go.jp | Typhoon position fallback | Public (JS endpoint, active season only) | environmental-data-hub |
+| **IBTrACS** | ncei.noaa.gov | Historical storm tracks (1841–present) | Public download | environmental-data-hub |
+| **NASA POWER** | power.larc.nasa.gov | Daily precipitation + 30-year climatology | Public API, no key needed | environmental-data-hub |
 | **VNDMS** | vndms.dmptc.gov.vn | River water levels | Public (requires spoofed headers) | WaterDashboard |
 | **Thuy Loi Vietnam** | e15.thuyloivietnam.vn | Lake/reservoir levels, storage, discharge | Public (HTTP only) | WaterDashboard |
 | **NCHMF** | luquetsatlo.nchmf.gov.vn | Flash flood + landslide warnings | Public API | WaterDashboard, CentralVN.Landslide |
@@ -119,6 +123,8 @@ Central index for all environmental and disaster data projects across the Spotli
 
 ## Known cross-cutting issues
 
+- **Data is fragmented across repos.** Each project maintains its own crawlers, CSVs, and GeoJSON files. There is no shared query interface.
+- **CSV storage grows unboundedly** in WaterDashboard and CentralVN.Landslide. Consider pruning at the start of each season.
 - **Two GitHub accounts** (`vnexpress-spotlight` and `spotlightvne`) — historical split. Environmental projects exist on both.
 - **No automated correlation** between typhoon position, water levels, and flood warnings — cross-referencing requires manual work.
 
@@ -126,15 +132,15 @@ Central index for all environmental and disaster data projects across the Spotli
 
 ## Potential upgrade: unified backend
 
-A unified backend has been built that consolidates all data sources into a single PostGIS database with a REST API:
+The current setup is fragmented — each project has its own crawlers and CSV files. A unified backend could consolidate everything:
 
-- All 7 data sources in one schema (storms, water levels, lakes, warnings, historical tracks, rainfall)
-- Full station network (not just selected 16 stations / 22 lakes)
-- Query by location, time range, or storm ID with a single HTTP call
+- Single PostGIS database for all data sources (storms, water levels, lakes, warnings, historical tracks, rainfall)
+- Full station network — not just the selected 16 stations / 22 lakes
+- Query by location, time range, or storm ID with one HTTP call
 - GitHub Actions crawlers with alert mode (auto-increases frequency during active storms)
 - No CSV growth — proper time-series storage with indexing
 
-The existing frontends can connect to this API with minimal changes. Contact **Tue (lqtue@gmail.com)** for API access — no setup needed, just a URL and a read-only key.
+The existing frontends could connect to such an API with minimal changes.
 
 ---
 
