@@ -30,7 +30,11 @@ Central index for all environmental and disaster data projects across the Spotli
 |---|---|---|---|
 | [lqtue/environmental-data-hub](https://github.com/lqtue/environmental-data-hub) | Consolidated Python crawlers for lake water, river levels, and landslide warnings | VNDMS, Thuy Loi Vietnam, NCHMF | Active |
 
-**Scripts available:** `crawlers/` module contains `lake_water.py`, `river_water.py`, and `landslide.py`. Colab API wrapper at `notebooks/crawlers.ipynb`.
+**Scripts available:** `crawlers/` module contains `lake_water.py`, `river_water.py`, and `landslide.py`.
+
+**Colab (dành cho biên tập viên — không cần cài đặt):**
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lqtue/environmental-data-hub/blob/main/notebooks/crawlers.ipynb)
 
 ### Water Levels & Reservoirs
 
