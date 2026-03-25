@@ -114,6 +114,9 @@
   .badge.archive { background: #e2e3e5; color: #383d41; }
   .badge.missing { background: #f8d7da; color: #721c24; }
 
+  /* --- CODE COMMENTS --- */
+  pre .comment { color: #888; font-style: italic; }
+
   /* --- FLOW DIAGRAM --- */
   .flow { background: var(--code-bg); padding: 20px; border-radius: 10px; overflow-x: auto; margin: 16px 0; font-family: 'SF Mono', monospace; font-size: 12.5px; white-space: pre; line-height: 1.6; }
 
@@ -167,6 +170,7 @@
   <span class="subtitle">VnExpress Spotlight — Bàn giao</span>
 
   <div class="section-label">Tổng quan</div>
+  <a href="#handover-status">Trạng thái Bàn giao</a>
   <a href="#overview">Tổng quan Dự án</a>
   <a href="#repos">Sơ đồ Kho lưu trữ</a>
   <a href="#dataflow">Kiến trúc Luồng Dữ liệu</a>
@@ -182,17 +186,17 @@
   <a href="#water-stations" class="sub">Các Trạm</a>
   <a href="#lakes">Hồ chứa</a>
   <a href="#lakes-api" class="sub">API Thủy lợi</a>
+  <a href="#rain-stations">Trạm Đo Mưa</a>
   <a href="#flood-warning">Cảnh báo Lũ quét & Sạt lở</a>
   <a href="#flood-nchmf" class="sub">API NCHMF</a>
   <a href="#flood-mapping">Bản đồ Ngập lụt</a>
   <a href="#rainfall">Dị thường Lượng mưa</a>
+  <a href="#ev">Chuyển đổi Xe điện</a>
 
   <div class="section-label">Vận hành</div>
   <a href="#workflow">Quy trình thông thường</a>
   <a href="#issues">Các vấn đề đã biết</a>
-  <a href="#upgrade">Backend Thống nhất</a>
-  <a href="#handover-status">Trạng thái Bàn giao</a>
-  <a href="#contacts">Liên hệ</a>
+  <a href="#upgrade">Đề xuất Nâng cấp</a>
 
   <button class="print-btn no-print" onclick="window.print()">Xuất ra PDF</button>
 </nav>
@@ -212,6 +216,43 @@
   Mỗi dự án nằm trong một kho lưu trữ (repository) riêng &mdash; tài liệu này liên kết chúng lại với nhau, ghi chép cách dữ liệu luân chuyển giữa các dự án,
   và cung cấp tài liệu tham khảo kỹ thuật đầy đủ cho mọi nguồn dữ liệu, endpoint API và script xử lý.
 </div>
+
+<!-- ==================== HANDOVER STATUS ==================== -->
+<h2 id="handover-status">Trạng thái Bàn giao</h2>
+
+<table>
+  <tr><th>#</th><th>Hạng mục</th><th>Trạng thái</th><th>Ghi chú</th></tr>
+  <tr>
+    <td>1</td>
+    <td>Bản đồ ranh giới TP.HCM 1975&ndash;nay</td>
+    <td><span class="badge pending">Chờ merge</span></td>
+    <td><a href="https://github.com/spotlightVnE/HCMCmap/pull/2" target="_blank">PR #2</a> &mdash; 7 file GeoJSON (Nội thành + Toàn TP, 1972&ndash;2025) đã đưa vào <code>Data/</code></td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>Tra cứu danh sách "168 phường xã mới"</td>
+    <td><span class="badge pending">Chờ PR #1</span></td>
+    <td><a href="https://github.com/spotlightVnE/HCMCmap/pull/1" target="_blank">PR #1</a> cần merge trước &mdash; cung cấp <code>Data/newWardData.json</code></td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>Nền tảng dữ liệu Bão / Thiên tai</td>
+    <td><span class="badge active">Hoàn thành</span></td>
+    <td>Scripts ở <a href="https://github.com/lqtue/environmental-data-hub" target="_blank">lqtue/environmental-data-hub</a> (<code>typhoon/</code> module)</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td>Chất lượng không khí &mdash; "Người Hà Nội hút thuốc thụ động"</td>
+    <td><span class="badge active">Hoàn thành</span></td>
+    <td>Ở repo <code>spotlightvne/HanoiAQ</code> &mdash; hãy kiểm tra lại</td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td>Xu hướng chuyển đổi xe điện</td>
+    <td><span class="badge pending">Đang xây dựng</span></td>
+    <td>Phương pháp luận LCA: <code>docs/ev-lca-methodology-vietnam.md</code> trong <a href="https://github.com/lqtue/environmental-data-hub" target="_blank">environmental-data-hub</a></td>
+  </tr>
+</table>
 
 <!-- ==================== REPO MAP ==================== -->
 <h2 id="repos">Sơ đồ Kho lưu trữ (Repository)</h2>
@@ -237,30 +278,27 @@
     <td><span class="badge active">Hoạt động</span></td>
   </tr>
 </table>
-<p><strong>Các script:</strong> <code>typhoon/jtwc_fetch.py</code> &middot; <code>typhoon/kmz_to_geojson.py</code> &middot; <code>typhoon/process_landfall.py</code> &middot; <code>typhoon/fetch_rain.py</code></p>
+<p><strong>Các script:</strong> <code>typhoon/kmz_to_geojson.py</code> &middot; <code>typhoon/compare_current_storm.py</code> &middot; <code>typhoon/process_landfall.py</code> &middot; <code>typhoon/compute_province_metrics.py</code> &middot; <code>typhoon/prepare_dashboard_data.py</code> &middot; <code>typhoon/fetch_rain.py</code></p>
+<p><strong>Colab (không cần cài đặt):</strong> <a href="https://colab.research.google.com/github/lqtue/environmental-data-hub/blob/main/notebooks/typhoon_analysis.ipynb" target="_blank"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab" style="vertical-align:middle"></a></p>
 
-<h3>Mực nước & Hồ chứa</h3>
+<h3>Mực nước, Hồ chứa & Cảnh báo Lũ quét / Sạt lở</h3>
 <table>
   <tr><th>Kho lưu trữ (Repo)</th><th>Mô tả</th><th>Nguồn Dữ liệu</th><th>Trạng thái</th></tr>
   <tr>
-    <td><a class="repo-link" href="https://github.com/lqtue/environmental-data-hub" target="_blank">lqtue/environmental-data-hub</a></td>
+    <td><a class="repo-link" href="https://github.com/vnexpress-spotlight/WaterDashboard" target="_blank">vnexpress-spotlight/WaterDashboard</a></td>
     <td>Mực nước sông (16 trạm) + lượng nước hồ (22 hồ chứa) trên toàn miền Trung</td>
     <td>VNDMS, Thủy Lợi Việt Nam</td>
-    <td><span class="badge active">Hoạt động</span></td>
+    <td><span class="badge active">Hoạt động</span> &mdash; hàng giờ</td>
+  </tr>
+  <tr>
+    <td><a class="repo-link" href="https://github.com/vnexpress-spotlight/CentralVN.Landslide" target="_blank">vnexpress-spotlight/CentralVN.Landslide</a></td>
+    <td>Bản đồ nguy cơ sạt lở + lũ quét cấp xã (Huế & Đà Nẵng)</td>
+    <td>NCHMF</td>
+    <td><span class="badge active">Hoạt động</span> &mdash; hàng giờ</td>
   </tr>
 </table>
 <p><strong>Lưu vực:</strong> Sê San &middot; Hương&ndash;Bồ &middot; Vu Gia&ndash;Thu Bồn &middot; Trà Khúc &middot; Kôn&ndash;Hà Thanh &middot; Ba &middot; Cái</p>
-
-<h3>Cảnh báo Lũ quét & Sạt lở</h3>
-<table>
-  <tr><th>Kho lưu trữ (Repo)</th><th>Mô tả</th><th>Nguồn Dữ liệu</th><th>Trạng thái</th></tr>
-  <tr>
-    <td><a class="repo-link" href="https://github.com/lqtue/environmental-data-hub" target="_blank">lqtue/environmental-data-hub</a></td>
-    <td>Bản đồ nguy cơ sạt lở + lũ quét cấp xã (Huế & Đà Nẵng)</td>
-    <td>NCHMF</td>
-    <td><span class="badge active">Hoạt động</span></td>
-  </tr>
-</table>
+<p><strong>Colab (xuất dữ liệu mực nước sông, hồ chứa, sạt lở):</strong> <a href="https://colab.research.google.com/github/lqtue/environmental-data-hub/blob/main/notebooks/crawlers.ipynb" target="_blank"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab" style="vertical-align:middle"></a></p>
 
 <h3>Bản đồ Ngập lụt</h3>
 <table>
@@ -287,9 +325,21 @@
     <td><a class="repo-link" href="https://github.com/vnexpress-spotlight/MuaMienTrung" target="_blank">vnexpress-spotlight/MuaMienTrung</a></td>
     <td>Lượng mưa miền Trung</td>
     <td>&mdash;</td>
-    <td><span class="badge archive">Trống</span></td>
+    <td><span class="badge archive">Lưu trữ (trống)</span></td>
   </tr>
 </table>
+
+<h3>Chuyển đổi Xe điện</h3>
+<table>
+  <tr><th>Kho lưu trữ (Repo)</th><th>Mô tả</th><th>Nguồn Dữ liệu</th><th>Trạng thái</th></tr>
+  <tr>
+    <td><a class="repo-link" href="https://github.com/lqtue/environmental-data-hub" target="_blank">lqtue/environmental-data-hub</a></td>
+    <td>So sánh GHG vòng đời (LCA) Việt Nam: BEV vs PHEV vs xe xăng, bao gồm xe máy</td>
+    <td>Phương pháp IEA LCA, GREET, số liệu lưới điện Việt Nam (EVN/PDP8)</td>
+    <td><span class="badge pending">Đang xây dựng</span></td>
+  </tr>
+</table>
+<p><strong>Tài liệu phương pháp:</strong> <code>docs/ev-lca-methodology-vietnam.md</code> &mdash; phủ sóng sản xuất xe, pin, phát thải lưới điện than (than 48%), tiêu thụ nhiên liệu trong điều kiện nhiệt đới.</p>
 
 <!-- ==================== DATA FLOW ==================== -->
 <h2 id="dataflow">Kiến trúc Luồng Dữ liệu</h2>
@@ -303,11 +353,11 @@
     JTWC/JMA    VNDMS     Thủy Lợi     NCHMF     GEOI / VegaCosmos
      (bão)      (sông)     (hồ)     (cảnh báo)   (CQKK / vùng ngập)
         │          │           │           │              │
-        ▼          └─────┬─────┴───────────┘              │
-  environmental-data-hub │                                │
-  typhoon/         crawlers/                              │
-  notebooks/       notebooks/                             │
-        │                │                                │
+        ▼          └─────┬─────┘           │              │
+  env-data-hub       WaterDashboard        │              │
+  typhoon/           water_export_cli.py   │              │
+  kmz_to_geojson.py                      │              │
+        │                │                 │              │
         │                │          ┌──────┘       ┌──────┘
         │                │          ▼              ▼
         │                │    CentralVN.      HanoiAQ
@@ -329,9 +379,10 @@
   <tr><td><strong>JMA</strong> (Nhật Bản)</td><td>Vị trí bão dự phòng</td><td>JS endpoint công khai (mùa bão)</td><td>environmental-data-hub</td></tr>
   <tr><td><strong>IBTrACS</strong> (NOAA)</td><td>Đường đi bão lịch sử (1841&ndash;nay)</td><td>Tải về công khai</td><td>environmental-data-hub</td></tr>
   <tr><td><strong>NASA POWER</strong></td><td>Lượng mưa hàng ngày + khí hậu 30 năm</td><td>API công khai, không cần key</td><td>environmental-data-hub</td></tr>
-  <tr><td><strong>VNDMS</strong></td><td>Mực nước sông</td><td>Công khai (cần giả mạo headers)</td><td>environmental-data-hub</td></tr>
-  <tr><td><strong>Thủy lợi Việt Nam</strong></td><td>Mực nước, dung tích, xả lũ hồ chứa</td><td>Công khai (chỉ HTTP)</td><td>environmental-data-hub</td></tr>
-  <tr><td><strong>NCHMF</strong></td><td>Cảnh báo lũ quét + sạt lở</td><td>API công khai</td><td>environmental-data-hub, CentralVN.Landslide</td></tr>
+  <tr><td><strong>VNDMS</strong> (mực nước)</td><td>Mực nước sông</td><td>Công khai (cần giả mạo headers)</td><td>WaterDashboard</td></tr>
+  <tr><td><strong>VNDMS</strong> (trạm mưa)</td><td>Lượng mưa theo trạm: 24h / 3 ngày / 7 ngày — 5 mạng lưới, ~2.800 trạm</td><td>Công khai, không cần header (<code>warning_rain</code>)</td><td>(tham khảo &mdash; chưa tích hợp vào dự án)</td></tr>
+  <tr><td><strong>Thủy lợi Việt Nam</strong></td><td>Mực nước, dung tích, xả lũ hồ chứa</td><td>Công khai (chỉ HTTP)</td><td>WaterDashboard</td></tr>
+  <tr><td><strong>NCHMF</strong></td><td>Cảnh báo lũ quét + sạt lở</td><td>API công khai</td><td>WaterDashboard, CentralVN.Landslide</td></tr>
   <tr><td><strong>GEOI</strong> (ĐHQGHN)</td><td>Mô hình PM2.5 cấp phường</td><td>Theo thỏa thuận</td><td>HanoiAQ</td></tr>
   <tr><td><strong>VegaCosmos</strong></td><td>Đa giác vùng ngập từ vệ tinh</td><td>Yêu cầu theo từng sự kiện</td><td>floodmap</td></tr>
 </table>
@@ -372,40 +423,149 @@
 <h3 id="typhoon-scripts">Các Script</h3>
 
 <details>
-  <summary>jtwc_fetch.py &mdash; Tự động lấy dữ liệu (GitHub Actions mỗi 6h)</summary>
-  <div class="detail-body">
-    <pre>pip install requests
-python typhoon/jtwc_fetch.py
-# Đầu ra: data/jtwc_active.geojson</pre>
-    <p><strong>Quy trình:</strong> RSS &rarr; tìm bão đang hoạt động &rarr; tải văn bản cảnh báo &rarr; trích xuất vị trí + dự báo &rarr; GeoJSON. Sẽ tự động dùng JMA nếu lỗi.</p>
-    <p><strong>Thuộc tính đầu ra:</strong> <code>SID</code>, <code>NAME</code>, <code>USA_WIND</code> (kt), <code>USA_PRES</code> (mb), <code>track_type</code> (<code>current</code>/<code>forecast</code>), <code>tau</code> (giờ), <code>category</code>, <code>fetched_at</code>.</p>
-    <p><strong>GitHub Actions:</strong> <code>jtwc_fetch.yml</code> chạy mỗi 6h. Có thể kích hoạt thủ công từ tab Actions để cập nhật nhanh hơn khi có bão.</p>
-  </div>
-</details>
-
-<details>
   <summary>kmz_to_geojson.py &mdash; Chuyển đổi KMZ thủ công</summary>
   <div class="detail-body">
-    <pre>python typhoon/kmz_to_geojson.py path/to/storm.kmz
-# Đầu ra: data/storm.geojson</pre>
-    <p>Trích xuất 4 loại dữ liệu hình học (qua thuộc tính <code>feature_type</code>):</p>
+    <pre>python typhoon/kmz_to_geojson.py path/to/storm.kmz [output.geojson]
+# Đầu ra mặc định: data/&lt;tên_file&gt;.geojson</pre>
+
+    <h4>Các loại Feature (feature_type)</h4>
+    <p>Mỗi feature trong GeoJSON đầu ra chứa <code>feature_type</code> (mã tiếng Anh) và <code>feature_name_vn</code> (tên tiếng Việt):</p>
     <table>
-      <tr><th>feature_type</th><th>Định dạng Hình học</th><th>Nội dung</th></tr>
-      <tr><td><code>forecast_point</code></td><td>Point</td><td>Vị trí tại mỗi mốc TAU</td></tr>
-      <tr><td><code>wind_radii</code></td><td>Polygon</td><td>Phạm vi gió 34/50/64 kt</td></tr>
-      <tr><td><code>best_track_point</code></td><td>Point</td><td>Đường đi lịch sử trong quá khứ</td></tr>
-      <tr><td><code>forecast_track</code> / <code>danger_swath</code></td><td>LineString / Polygon</td><td>Đường dự báo / khu vực rủi ro</td></tr>
+      <tr><th>feature_type</th><th>feature_name_vn</th><th>Hình học</th><th>Nội dung</th></tr>
+      <tr><td><code>forecast_point</code></td><td>Vị trí dự báo</td><td>Point</td><td>Vị trí dự báo tại mỗi mốc TAU (0, 12, 24, 36, 48, 72, 96, 120h)</td></tr>
+      <tr><td><code>wind_radii</code></td><td>Vùng gió</td><td>Polygon</td><td>Phạm vi gió 34/50/64 kt tại mỗi mốc TAU</td></tr>
+      <tr><td><code>best_track_point</code></td><td>Vị trí theo dõi</td><td>Point</td><td>Các vị trí quan trắc thực tế trong quá khứ (mỗi 6h)</td></tr>
+      <tr><td><code>forecast_track</code></td><td>Đường dự báo</td><td>LineString</td><td>Đường nối các điểm dự báo</td></tr>
+      <tr><td><code>best_track</code></td><td>Đường đi thực tế</td><td>LineString</td><td>Đường nối các điểm quan trắc trong quá khứ</td></tr>
+      <tr><td><code>danger_swath</code></td><td>Vùng nguy hiểm</td><td>Polygon</td><td>Vùng dải nguy hiểm 34 kt (forecast cone)</td></tr>
     </table>
-    <p>Thời gian được chuyển đổi sang GMT+7 và định dạng kiểu tiếng Việt (vd: <code>T3, 17/3 19:00</code>).</p>
+
+    <h4>Thuộc tính (Properties) theo từng loại</h4>
+    <p><strong>forecast_point:</strong></p>
+    <table>
+      <tr><th>Thuộc tính</th><th>Ví dụ</th><th>Mô tả</th></tr>
+      <tr><td><code>storm_name</code></td><td><code>"NARELLE"</code></td><td>Tên cơn bão (từ JTWC)</td></tr>
+      <tr><td><code>tau_h</code></td><td><code>48</code></td><td>Số giờ dự báo kể từ thời điểm cảnh báo</td></tr>
+      <tr><td><code>dtg_utc</code></td><td><code>"2026-03-26T00:00:00Z"</code></td><td>Thời gian UTC (ISO 8601)</td></tr>
+      <tr><td><code>time_vn</code></td><td><code>"T5, 26/3 07:00"</code></td><td>Thời gian GMT+7, định dạng tiếng Việt</td></tr>
+      <tr><td><code>wind_kt</code></td><td><code>80</code></td><td>Sức gió duy trì tối đa (knots)</td></tr>
+      <tr><td><code>wind_kmh</code></td><td><code>148.2</code></td><td>Sức gió duy trì tối đa (km/h)</td></tr>
+      <tr><td><code>category</code></td><td><code>"bão rất mạnh"</code></td><td>Phân loại NCHMF (xem bảng bên dưới)</td></tr>
+      <tr><td><code>movement_deg</code></td><td><code>270</code></td><td>Hướng di chuyển (độ), chỉ có ở TAU 0</td></tr>
+      <tr><td><code>movement_kmh</code></td><td><code>18.5</code></td><td>Tốc độ di chuyển (km/h), chỉ có ở TAU 0</td></tr>
+    </table>
+
+    <p><strong>best_track_point:</strong> <code>dtg_utc</code>, <code>time_vn</code>, <code>wind_kt</code>, <code>wind_kmh</code>, <code>category</code></p>
+    <p><strong>wind_radii:</strong> <code>radii_kt</code> (34/50/64), <code>radii_kmh</code>, <code>tau_h</code>, <code>dtg_utc</code>, <code>time_vn</code></p>
+    <p><strong>danger_swath:</strong> <code>radii_kt</code> (34), <code>radii_kmh</code>, <code>name</code></p>
+
+    <h4>Cách script hoạt động</h4>
+    <ol>
+      <li><strong>Giải nén KMZ</strong> &mdash; KMZ là file ZIP chứa một file KML bên trong. Script dùng <code>zipfile</code> để đọc file <code>.kml</code>.</li>
+      <li><strong>Phân tích KML</strong> &mdash; dùng <code>xml.etree.ElementTree</code> để duyệt tất cả các <code>&lt;Placemark&gt;</code> trong file KML.</li>
+      <li><strong>Phân loại Placemark</strong> &mdash; với mỗi placemark, script nhận diện loại dựa trên tên:
+        <ul>
+          <li>Tên chứa <code>"DD/HHZ - NN knots"</code> &rarr; <strong>forecast_point</strong> (dùng regex)</li>
+          <li>Tên chứa <code>"RADIUS OF NN KT WINDS"</code> &rarr; <strong>wind_radii</strong></li>
+          <li>Tên khớp mẫu <code>"YYMMDDHH Z"</code> &rarr; <strong>best_track_point</strong></li>
+          <li>Placemark chứa <code>&lt;LineString&gt;</code> &rarr; <strong>forecast_track</strong> hoặc <strong>best_track</strong></li>
+          <li>Placemark chứa <code>&lt;Polygon&gt;</code> &rarr; <strong>danger_swath</strong></li>
+        </ul>
+      </li>
+      <li><strong>Chuyển đổi thời gian</strong> &mdash; tất cả thời gian UTC được chuyển sang GMT+7 và định dạng kiểu tiếng Việt (<code>T2</code>=Thứ 2, ..., <code>CN</code>=Chủ nhật). Ví dụ: <code>"T3, 24/3 07:00"</code>.</li>
+      <li><strong>Chuyển đổi đơn vị</strong> &mdash; sức gió từ knots sang km/h (nhân hệ số 1.852).</li>
+      <li><strong>Phân loại cấp bão</strong> &mdash; theo thang NCHMF Việt Nam (xem bảng Phân loại Sức gió bên dưới).</li>
+      <li><strong>Ghi GeoJSON</strong> &mdash; tất cả features được gộp vào một <code>FeatureCollection</code> duy nhất kèm block <code>_meta</code> chứa thống kê.</li>
+    </ol>
+
+    <h4>Ví dụ đầu ra (forecast_point)</h4>
+    <pre>{
+  "type": "Feature",
+  "geometry": { "type": "Point", "coordinates": [109.5, 13.2] },
+  "properties": {
+    "feature_type": "forecast_point",
+    "feature_name_vn": "Vị trí dự báo",
+    "storm_name": "NARELLE",
+    "tau_h": 48,
+    "dtg_utc": "2026-03-26T00:00:00Z",
+    "time_vn": "T5, 26/3 07:00",
+    "wind_kt": 80,
+    "wind_kmh": 148.2,
+    "category": "bão rất mạnh",
+    "movement_deg": null,
+    "movement_kmh": null
+  }
+}</pre>
   </div>
 </details>
 
 <details>
-  <summary>process_landfall.py &mdash; Phân tích dữ liệu lịch sử IBTrACS</summary>
+  <summary>process_landfall.py &mdash; Phân tích đổ bộ bão từ IBTrACS</summary>
   <div class="detail-body">
-    <pre>python typhoon/process_landfall.py
+    <pre>pip install geopandas pandas numpy shapely
+python typhoon/process_landfall.py
 # Đầu ra: data/typhoon_landfalls.csv</pre>
-    <p>Chạy một lần mỗi mùa bão với dữ liệu IBTrACS được cập nhật mới nhất.</p>
+
+    <h4>Yêu cầu đầu vào</h4>
+    <table>
+      <tr><th>Tệp</th><th>Nguồn</th><th>Mô tả</th></tr>
+      <tr><td><code>TyphoonRaw/points.zip</code></td><td>IBTrACS (tải về &mdash; xem hướng dẫn bên dưới)</td><td>Shapefile điểm bão Tây Thái Bình Dương</td></tr>
+      <tr><td><code>data/LandfallTyphoon.csv</code></td><td>Thủ công</td><td>Danh sách SID các cơn bão cần xử lý (lọc trước)</td></tr>
+      <tr><td><code>data/VietnamMainland.geojson</code></td><td>Có sẵn trong repo</td><td>Đường bờ biển Việt Nam (đất liền)</td></tr>
+      <tr><td><code>data/ProvincialMainland.geojson</code></td><td>Có sẵn trong repo</td><td>Ranh giới tỉnh (để xác định tỉnh đổ bộ)</td></tr>
+    </table>
+
+    <h4>Cách script hoạt động</h4>
+    <ol>
+      <li><strong>Tải dữ liệu</strong> &mdash; đọc shapefile IBTrACS (điểm), lọc theo danh sách SID trong <code>LandfallTyphoon.csv</code>.</li>
+      <li><strong>Chuyển đổi</strong> &mdash; thời gian UTC &rarr; GMT+7, sức gió knots &rarr; km/h, tọa độ &rarr; hệ chiếu mét (EPSG:32648).</li>
+      <li><strong>Xây dựng đoạn đường</strong> &mdash; nối mỗi cặp điểm liên tiếp thành <code>LineString</code>. Tính độ dài đoạn (m) và thời gian đoạn (h).</li>
+      <li><strong>Giao cắt hình học</strong> &mdash; dùng <code>gpd.overlay()</code> để tìm phần đoạn đường nằm trên đất liền Việt Nam. Tỷ lệ giao cắt xác định thời điểm đổ bộ chính xác (nội suy tuyến tính).</li>
+      <li><strong>Xác định tỉnh</strong> &mdash; dùng <code>gpd.sjoin()</code> với ranh giới tỉnh để tìm tỉnh đổ bộ đầu tiên và tất cả các tỉnh bão đi qua.</li>
+      <li><strong>Tổng hợp</strong> &mdash; với mỗi SID: thời điểm đổ bộ, vị trí (lat/lon), sức gió lúc đổ bộ, thời gian trên đất liền, sức gió trung bình, khoảng cách ngày giữa các lần đổ bộ trong cùng năm.</li>
+    </ol>
+
+    <h4>Cột đầu ra (typhoon_landfalls.csv)</h4>
+    <table>
+      <tr><th>Cột</th><th>Ví dụ</th><th>Mô tả</th></tr>
+      <tr><td><code>SID</code></td><td><code>2024294N10148</code></td><td>Mã định danh cơn bão (IBTrACS)</td></tr>
+      <tr><td><code>NAME</code></td><td><code>TRAMI</code></td><td>Tên quốc tế</td></tr>
+      <tr><td><code>calc_landfall_time</code></td><td><code>2024-10-27 01:30</code></td><td>Thời điểm đổ bộ (GMT+7, nội suy)</td></tr>
+      <tr><td><code>landfall_lat</code> / <code>lon</code></td><td><code>16.23</code> / <code>108.05</code></td><td>Tọa độ điểm đổ bộ</td></tr>
+      <tr><td><code>wind_at_landfall_kph</code></td><td><code>130.5</code></td><td>Sức gió lúc đổ bộ (km/h, nội suy)</td></tr>
+      <tr><td><code>province_landfall</code></td><td><code>Đà Nẵng</code></td><td>Tỉnh đổ bộ đầu tiên</td></tr>
+      <tr><td><code>provinces_crossed</code></td><td><code>Đà Nẵng, Quảng Nam</code></td><td>Tất cả tỉnh bão đi qua</td></tr>
+      <tr><td><code>time_on_land_h</code></td><td><code>18.5</code></td><td>Tổng thời gian trên đất liền (giờ)</td></tr>
+      <tr><td><code>avg_wind_on_land_kph</code></td><td><code>95.2</code></td><td>Sức gió trung bình khi trên đất liền</td></tr>
+    </table>
+  </div>
+</details>
+
+<details>
+  <summary>compute_province_metrics.py &mdash; Thống kê rủi ro theo tỉnh</summary>
+  <div class="detail-body">
+    <pre>python typhoon/compute_province_metrics.py
+# Đầu ra: data/province_metrics.csv</pre>
+    <p>Chạy sau <code>process_landfall.py</code>. Lọc dữ liệu từ 1995 đến nay, tính cho mỗi tỉnh:</p>
+    <ul>
+      <li><code>Direct_Landfall_Count</code> &mdash; số lần bão đổ bộ trực tiếp</li>
+      <li><code>Avg_Wind_at_Landfall_kph</code> &mdash; sức gió trung bình lúc đổ bộ</li>
+      <li><code>Crossed_Count</code> &mdash; số lần bão đi qua (kể cả không đổ bộ trực tiếp)</li>
+      <li><code>Avg_Days_Between_Landfalls</code> &mdash; khoảng cách trung bình giữa các lần đổ bộ (ngày)</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>prepare_dashboard_data.py &mdash; Chuẩn bị dữ liệu dashboard</summary>
+  <div class="detail-body">
+    <pre>python typhoon/prepare_dashboard_data.py
+# Đầu ra: data/historical_tracks.geojson + data/province_metrics.json</pre>
+    <p>Chạy sau <code>process_landfall.py</code> và <code>compute_province_metrics.py</code>. Tạo 2 file cho dashboard:</p>
+    <ul>
+      <li><code>historical_tracks.geojson</code> &mdash; LineString cho mỗi cơn bão đổ bộ Việt Nam (kèm <code>point_winds</code> và <code>point_times</code> cho phép tô màu từng đoạn)</li>
+      <li><code>province_metrics.json</code> &mdash; dạng JSON từ file CSV ở trên</li>
+    </ul>
   </div>
 </details>
 
@@ -413,20 +573,112 @@ python typhoon/jtwc_fetch.py
   <summary>fetch_rain.py &mdash; Dị thường lượng mưa NASA POWER</summary>
   <div class="detail-body">
     <pre>pip install geopandas pandas numpy requests scipy matplotlib shapely
-python typhoon/fetch_rain.py
+python typhoon/fetch_rain.py 20260901 20261115
 # Đầu ra: rain/RainAnomaly.geojson (mất khoảng 5-10 phút)</pre>
-    <p>Chỉnh sửa khoảng thời gian ở đầu script, đặt tệp <code>CountryBoundary.geojson</code> ở thư mục gốc của kho lưu trữ.</p>
+    <p>Nếu không truyền tham số ngày, mặc định là 1/1 &ndash; 30/11 năm hiện tại.</p>
+
+    <h4>Yêu cầu đầu vào</h4>
+    <p>Đặt tệp <code>CountryBoundary.geojson</code> (ranh giới quốc gia Việt Nam) ở thư mục gốc repo. Tệp này không có sẵn trong repo &mdash; có thể tải từ Natural Earth hoặc GADM.</p>
+
+    <h4>Cách script hoạt động</h4>
+    <ol>
+      <li><strong>Tạo lưới điểm</strong> &mdash; phủ lưới 0.5&deg; (~50 km) lên ranh giới Việt Nam &rarr; ~300 điểm.</li>
+      <li><strong>Tải song song</strong> &mdash; 10 worker song song, mỗi điểm gọi 2 API NASA POWER:
+        <ul>
+          <li>Lượng mưa thực tế trong khoảng thời gian chỉ định (API <code>temporal/daily</code>)</li>
+          <li>Trung bình 30 năm theo tháng (API <code>temporal/climatology</code>)</li>
+        </ul>
+      </li>
+      <li><strong>Tính dị thường</strong> &mdash; <code>anomaly = (thực tế &minus; kỳ vọng) / kỳ vọng &times; 100%</code>. Giá trị dương = ướt hơn bình thường.</li>
+      <li><strong>Nội suy</strong> &mdash; từ 0.5&deg; sang 0.05&deg; (~5 km) bằng nội suy bậc 3 (cubic), lấp khoảng trống bằng nearest.</li>
+      <li><strong>Tạo polygon</strong> &mdash; dùng <code>matplotlib.contourf()</code> để tạo các đường đẳng trị mỗi 10%, chuyển thành polygon, cắt theo ranh giới Việt Nam.</li>
+    </ol>
+
+    <h4>Thuộc tính đầu ra (mỗi polygon)</h4>
+    <table>
+      <tr><th>Thuộc tính</th><th>Ví dụ</th><th>Mô tả</th></tr>
+      <tr><td><code>Anomaly_Min</code> / <code>Max</code></td><td><code>-20</code> / <code>-10</code></td><td>Phạm vi dị thường (%)</td></tr>
+      <tr><td><code>Label</code></td><td><code>"-20% to -10%"</code></td><td>Nhãn hiển thị</td></tr>
+      <tr><td><code>Avg_Rain_mm</code></td><td><code>1450</code></td><td>Lượng mưa thực tế trung bình trong vùng (mm) trong khoảng thời gian chỉ định</td></tr>
+      <tr><td><code>Avg_Rain_Normal</code></td><td><code>1600</code></td><td>Lượng mưa kỳ vọng trung bình (mm, 30 năm)</td></tr>
+    </table>
   </div>
 </details>
 
-<h4>Phân loại Sức gió</h4>
+<h4>Tải dữ liệu IBTrACS</h4>
+<div class="card info">
+  <div class="card-title">Hướng dẫn tải IBTrACS (NOAA)</div>
+  <p>IBTrACS là bộ dữ liệu đường đi bão toàn cầu, cập nhật hàng tuần trong mùa bão. Tải shapefile Tây Thái Bình Dương:</p>
+  <ol>
+    <li>Vào <a href="https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/shapefile/" target="_blank">https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/shapefile/</a></li>
+    <li>Tải <code>IBTrACS.WP.list.v04r01.points.zip</code> (điểm &mdash; dùng cho <code>process_landfall.py</code> và <code>prepare_dashboard_data.py</code>)</li>
+    <li>Tải <code>IBTrACS.WP.list.v04r01.lines.zip</code> (đường &mdash; tùy chọn, để vẽ track nhanh)</li>
+    <li>Đặt vào thư mục <code>TyphoonRaw/</code> và đổi tên thành <code>points.zip</code> / <code>lines.zip</code></li>
+  </ol>
+  <pre># Hoặc tải bằng command line:
+curl -o TyphoonRaw/points.zip \
+  "https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/shapefile/IBTrACS.WP.list.v04r01.points.zip"</pre>
+  <p><strong>Khi nào cần tải lại:</strong> Đầu mỗi mùa bão (tháng 5&ndash;6) và sau khi mùa bão kết thúc (tháng 12&ndash;1) để có dữ liệu năm vừa qua.</p>
+</div>
+
+<h4>Quy trình chạy đầy đủ (sau khi tải IBTrACS mới)</h4>
+<pre>python typhoon/process_landfall.py         # 1. Tính toán đổ bộ &rarr; typhoon_landfalls.csv
+python typhoon/compute_province_metrics.py  # 2. Thống kê tỉnh   &rarr; province_metrics.csv
+python typhoon/prepare_dashboard_data.py    # 3. Chuẩn bị GeoJSON &rarr; historical_tracks.geojson + province_metrics.json</pre>
+
+<details>
+  <summary>compare_current_storm.py &mdash; So sánh bão đang hoạt động với lịch sử</summary>
+  <div class="detail-body">
+    <pre># Bước 1: Tải KMZ từ JTWC và chuyển đổi
+python typhoon/kmz_to_geojson.py path/to/wp1426.kmz
+
+# Bước 2: Chạy so sánh
+python typhoon/compare_current_storm.py data/wp1426.geojson --name "Bão số 7"
+# Đầu ra: data/current_storm_analysis.json</pre>
+
+    <p>Script này dùng khi có bão đang hoạt động &mdash; lấy dữ liệu KMZ (đã chuyển đổi) và so sánh với toàn bộ lịch sử đổ bộ Việt Nam trong <code>typhoon_landfalls.csv</code>.</p>
+
+    <h4>Phân tích bao gồm</h4>
+    <ul>
+      <li><strong>Dự đoán đổ bộ</strong> &mdash; kiểm tra đường dự báo có cắt qua đất liền Việt Nam không; nếu có, ước tính sức gió và tỉnh đổ bộ</li>
+      <li><strong>Phần trăm vị (percentile)</strong> &mdash; sức gió dự báo đỉnh mạnh hơn bao nhiêu phần trăm bão lịch sử</li>
+      <li><strong>Lịch sử tỉnh</strong> &mdash; nếu có tỉnh đổ bộ dự kiến, liệt kê tất cả bão lịch sử từng đổ bộ tỉnh đó</li>
+      <li><strong>Bão tương đồng</strong> &mdash; 10 bão có cường độ gần nhất (±20 km/h so với đỉnh dự báo)</li>
+    </ul>
+
+    <h4>Cấu trúc đầu ra (current_storm_analysis.json)</h4>
+    <pre>{
+  "storm": {
+    "name": "Bão số 7",
+    "current_position": { "wind_kt": 80, "category": "bão rất mạnh", ... },
+    "peak_forecast": { "wind_kt": 95, "tau_h": 72, ... },
+    "track_points": [ ... ]
+  },
+  "landfall_estimate": {
+    "estimated": true,
+    "wind_kmh": 148.2,
+    "province": "tỉnh Quảng Nam",
+    "time_window": ["T5, 26/3 07:00", "T6, 27/3 07:00"]
+  },
+  "historical_comparison": {
+    "total_historical_landfalls": 430,
+    "peak_forecast_percentile": 99.1,
+    "similar_intensity_storms": [ ... ],
+    "province_history": { "landfall_count": 35, "storms": [...] }
+  }
+}</pre>
+  </div>
+</details>
+
+<h4>Phân loại Sức gió (NCHMF &mdash; Quyết định 18/2021/QĐ-TTg)</h4>
 <table>
-  <tr><th>Knots</th><th>km/h</th><th>Tiếng Việt</th></tr>
-  <tr><td>&lt; 34</td><td>&lt; 63</td><td>Áp thấp nhiệt đới</td></tr>
-  <tr><td>34&ndash;47</td><td>63&ndash;87</td><td>Bão nhiệt đới</td></tr>
-  <tr><td>48&ndash;63</td><td>88&ndash;117</td><td>Bão nhiệt đới mạnh</td></tr>
-  <tr><td>64&ndash;129</td><td>118&ndash;239</td><td>Bão</td></tr>
-  <tr><td>&ge; 130</td><td>&ge; 241</td><td>Siêu bão</td></tr>
+  <tr><th>Knots</th><th>km/h</th><th>Tiếng Việt</th><th>Cấp</th></tr>
+  <tr><td>&lt; 21</td><td>&lt; 39</td><td>Áp thấp</td><td>&le; 5</td></tr>
+  <tr><td>21&ndash;33</td><td>39&ndash;61</td><td>Áp thấp nhiệt đới</td><td>6&ndash;7</td></tr>
+  <tr><td>34&ndash;47</td><td>62&ndash;88</td><td>Bão</td><td>8&ndash;9</td></tr>
+  <tr><td>48&ndash;63</td><td>89&ndash;117</td><td>Bão mạnh</td><td>10&ndash;11</td></tr>
+  <tr><td>64&ndash;99</td><td>118&ndash;184</td><td>Bão rất mạnh</td><td>12&ndash;15</td></tr>
+  <tr><td>&ge; 100</td><td>&ge; 185</td><td>Siêu bão</td><td>&ge; 16</td></tr>
 </table>
 
 <!-- ==================== WATER LEVELS ==================== -->
@@ -440,6 +692,7 @@ python typhoon/fetch_rain.py
 <p>Trả về GeoJSON FeatureCollection. <code>lv</code> dùng để lọc theo mức báo động (0 = bình thường, 1/2/3 = BĐ1/2/3).</p>
 
 <h4>Endpoint dữ liệu trạm</h4>
+<p>Lưu ý: endpoint này dùng subdomain khác (<code>vndms.dmc.gov.vn</code>) so với endpoint danh sách trạm (<code>vndms.dmptc.gov.vn</code>) &mdash; cả hai đều thuộc VNDMS, không phải lỗi.</p>
 <pre>POST https://vndms.dmc.gov.vn/home/detailRain
      id={station_id}&amp;timeSelect=7&amp;source=Water</pre>
 <p>Trả về JSON với: <code>labels</code> (thời gian), <code>value</code> (mực nước tính bằng mét), <code>bao_dong1/2/3</code> (các ngưỡng báo động), <code>gia_tri_lu_lich_su</code> + <code>nam_lu_lich_su</code> (kỷ lục lũ lụt lịch sử).</p>
@@ -522,6 +775,90 @@ python typhoon/fetch_rain.py
 
 <p><strong>22 hồ chứa</strong> hiện đang được giám sát trên 7 lưu vực (Sê San, Hương&ndash;Bồ, Vu Gia&ndash;Thu Bồn, Trà Khúc, Ba, Kôn&ndash;Hà Thanh, Cái).</p>
 
+<!-- ==================== RAIN STATIONS ==================== -->
+<h2 id="rain-stations">Trạm Đo Mưa (VNDMS)</h2>
+
+<h3>Endpoint</h3>
+<pre>GET https://vndms.gov.vn/warning_rain?lv1={min_mm}&amp;lv2={max_mm}&amp;types={1-7}</pre>
+<p>Trả về GeoJSON FeatureCollection các trạm đo mưa, lọc theo tổng lượng mưa và mạng lưới nguồn. Không cần key, không cần header đặc biệt.</p>
+
+<h4>Tham số</h4>
+<table>
+  <tr><th>Tham số</th><th>Kiểu</th><th>Phạm vi</th><th>Mô tả</th></tr>
+  <tr><td><code>lv1</code></td><td>integer</td><td>0 &ndash; 1000</td><td>Ngưỡng mưa tối thiểu (mm) &mdash; chỉ trả về trạm có tổng mưa &ge; lv1</td></tr>
+  <tr><td><code>lv2</code></td><td>integer</td><td>0 &ndash; 1000</td><td>Ngưỡng mưa tối đa (mm) &mdash; chỉ trả về trạm có tổng mưa &le; lv2</td></tr>
+  <tr><td><code>types</code></td><td>integer</td><td>1 &ndash; 7</td><td>Mạng lưới nguồn (xem bảng bên dưới)</td></tr>
+</table>
+<p>Dùng <code>lv1=0&amp;lv2=1000</code> để lấy tất cả trạm bất kể lượng mưa.</p>
+
+<h4>Mạng lưới nguồn (types)</h4>
+<table>
+  <tr><th>types</th><th>Mã nguồn</th><th>Tên đầy đủ</th><th>Số trạm (tiêu biểu)</th></tr>
+  <tr><td>1</td><td>KT</td><td>Khí tượng (Bộ TN&MT)</td><td>~20</td></tr>
+  <tr><td>2</td><td>Wps</td><td>Cảm biến nông nghiệp (WPS)</td><td>~49</td></tr>
+  <tr><td>3</td><td>Vrain</td><td>Mạng lưới Vrain</td><td>~1.377</td></tr>
+  <tr><td>4</td><td>Nhân dân</td><td>Cảm biến cộng đồng (crowd-sourced)</td><td>~1.319</td></tr>
+  <tr><td>5</td><td>TV</td><td>Thủy văn (trạm quan trắc sông)</td><td>~11</td></tr>
+  <tr><td>6</td><td>&mdash;</td><td>(trống &mdash; không có dữ liệu)</td><td>0</td></tr>
+  <tr><td>7</td><td>Agri_tc</td><td>Tổng cục Phòng chống Thiên tai (PCTT)</td><td>~3</td></tr>
+</table>
+
+<h4>Cấu trúc Feature</h4>
+<pre>{
+  "type": "Feature",
+  "geometry": { "type": "Point", "coordinates": [106.598, 10.888] },
+  "properties": {
+    "label":      "Hóc Môn",       <span class="comment">// Tên trạm</span>
+    "longtitude": 106.598,          <span class="comment">// Lỗi chính tả từ API — đúng là "longitude"</span>
+    "latitude":   10.888,
+    "popupInfo":  "&lt;table&gt;...&lt;/table&gt;"  <span class="comment">// HTML blob — cần parse</span>
+  }
+}</pre>
+<p>Trường <code>popupInfo</code> là HTML thô chứa: tên trạm, mã trạm, địa điểm, tổng lượng mưa 24h / 3 ngày / 7 ngày, tên nguồn, và link biểu đồ lượng mưa theo giờ.</p>
+
+<h4>Ví dụ sử dụng Python</h4>
+<pre>import requests
+from bs4 import BeautifulSoup
+
+def fetch_rain_stations(types: int, lv1: int = 0, lv2: int = 1000) -> list[dict]:
+    url = "https://vndms.gov.vn/warning_rain"
+    resp = requests.get(url, params={"lv1": lv1, "lv2": lv2, "types": types}, verify=False)
+    features = resp.json().get("features", [])
+    rows = []
+    for f in features:
+        p = f["properties"]
+        soup = BeautifulSoup(p["popupInfo"], "html.parser")
+        cells = [td.get_text(strip=True) for td in soup.find_all("td")]
+        info = dict(zip(cells[::2], cells[1::2]))  # key-value từ các cặp td
+        rows.append({
+            "name":       p["label"],
+            "lon":        p["longtitude"],
+            "lat":        p["latitude"],
+            "station_id": info.get("Mã trạm", ""),
+            "location":   info.get("Địa điểm", ""),
+            "rain_24h":   info.get("24 giờ", ""),
+            "rain_3d":    info.get("3 ngày", ""),
+            "rain_7d":    info.get("7 ngày", ""),
+        })
+    return rows
+
+# Lấy tất cả trạm Vrain (types=3)
+stations = fetch_rain_stations(types=3)
+print(f"Số trạm: {len(stations)}")   # ~1377
+
+# Lọc trạm có mưa > 50mm trong 24h
+heavy_rain = fetch_rain_stations(types=3, lv1=50, lv2=1000)</pre>
+
+<div class="card warn">
+  <div class="card-title">Lưu ý</div>
+  <ul>
+    <li><strong>SSL tự ký (self-signed).</strong> Server dùng chứng chỉ không tin cậy. Cần <code>verify=False</code> trong requests (hoặc thêm CA vào bundle). Thêm <code>import urllib3; urllib3.disable_warnings()</code> để tắt cảnh báo.</li>
+    <li><strong>Lỗi chính tả trong API:</strong> trường tọa độ là <code>longtitude</code> (thiếu chữ "i") &mdash; không phải lỗi code của bạn.</li>
+    <li><strong>Không có trường thời gian (timestamp)</strong> trong response &mdash; dữ liệu phản ánh trạng thái hiện tại tại thời điểm gọi.</li>
+    <li><strong><code>types=6</code> luôn trả về rỗng</strong> &mdash; bỏ qua.</li>
+  </ul>
+</div>
+
 <!-- ==================== FLOOD WARNING ==================== -->
 <h2 id="flood-warning">Cảnh báo Lũ quét & Sạt lở</h2>
 
@@ -541,9 +878,10 @@ python typhoon/fetch_rain.py
 </table>
 
 <details>
-  <summary>landslide.py &mdash; Script xuất dữ liệu cảnh báo</summary>
+  <summary>landslide_export_cli.py &mdash; Script xuất dữ liệu cảnh báo (trong WaterDashboard)</summary>
   <div class="detail-body">
-    <pre>python crawlers/landslide.py
+    <p>Script này thuộc repo <code>vnexpress-spotlight/WaterDashboard</code>. Phiên bản dùng được trong Colab là <code>crawlers/landslide.py</code> trong <code>lqtue/environmental-data-hub</code> (cùng logic, khác interface).</p>
+    <pre>python landslide_export_cli.py
 # Đầu ra: data/landslide.csv</pre>
     <ol>
       <li>Lấy dữ liệu cảnh báo hiện hành từ NCHMF (làm tròn đến giờ hiện tại)</li>
@@ -601,26 +939,58 @@ python typhoon/fetch_rain.py
   <li>Nội suy từ độ phân giải 0.5&deg; sang 0.05&deg;, cắt xén theo ranh giới Việt Nam</li>
 </ol>
 
+<!-- ==================== EV TRANSITION ==================== -->
+<h2 id="ev">Chuyển đổi Xe điện</h2>
+
+<h3>Phương pháp LCA Việt Nam</h3>
+<p>Phân tích vòng đời (LCA) so sánh tổng phát thải GHG từ nôi đến mộ (<em>cradle to grave</em>) của xe điện (BEV), xe hybrid sạc điện (PHEV) và xe xăng/dầu (ICEV) trong điều kiện Việt Nam.</p>
+
+<div class="card warn">
+  <div class="card-title">Điểm khác biệt của Việt Nam</div>
+  <ul>
+    <li><strong>Lưới điện nặng than</strong> &mdash; than chiếm 48% sản lượng điện (2024); hệ số phát thải ước tính 0,75&ndash;0,85 tCO₂e/MWh. Q1/2025 (mùa khô) than lên tới 56,5%. Đây là yếu tố quyết định việc xe điện có thực sự xanh không.</li>
+    <li><strong>Thị trường chủ yếu là xe máy</strong> &mdash; 93,3% phương tiện đăng ký là xe máy. Mọi LCA có ý nghĩa phải bao gồm cả hai bánh, không chỉ ô tô.</li>
+    <li><strong>VinFast là nhà sản xuất EV nội địa chủ đạo</strong> &mdash; 87.000 xe điện bán năm 2024 (+150% YoY), chiếm 17,6% thị phần ô tô; 400.000 xe máy điện năm 2025 (+532% YoY).</li>
+  </ul>
+</div>
+
+<h4>Thành phần phát thải</h4>
+<table>
+  <tr><th>Thành phần</th><th>Mô tả</th><th>Quan trọng cho VN</th></tr>
+  <tr><td><strong>Sản xuất xe</strong></td><td>Thép, nhôm, đồng, nhựa, kính — khai thác + lắp ráp</td><td>Trung bình</td></tr>
+  <tr><td><strong>Sản xuất pin</strong></td><td>LFP ~60 kgCO₂e/kWh, NMC ~90 kgCO₂e/kWh</td><td>Cao</td></tr>
+  <tr><td><strong>Well-to-tank (WTT)</strong></td><td>Lọc dầu (xăng/dầu) <em>hoặc</em> phát điện + tổn thất lưới (BEV)</td><td><strong>Rất cao</strong> — lưới điện than</td></tr>
+  <tr><td><strong>Tank-to-wheel (TTW)</strong></td><td>CO₂ ống xả (0 với BEV)</td><td>Trung bình</td></tr>
+</table>
+
+<h4>Hệ số phát thải lưới điện (tCO₂e/MWh)</h4>
+<table>
+  <tr><th>Năm</th><th>Hệ số</th><th>Nguồn</th></tr>
+  <tr><td>2024</td><td>0,75&ndash;0,85</td><td>Ước tính từ cơ cấu nguồn điện</td></tr>
+  <tr><td>Q1/2025 (mùa khô)</td><td>0,80&ndash;0,90</td><td>Báo cáo Q1 EVN</td></tr>
+  <tr><td>2030 (PDP8 sửa đổi — QĐ 768/2025)</td><td>0,55&ndash;0,65</td><td>Giới hạn phát thải 197&ndash;199 MtCO₂</td></tr>
+  <tr><td>2050 (net-zero)</td><td>~0,05</td><td>Cam kết COP26 của Việt Nam</td></tr>
+</table>
+
+<p>Tài liệu đầy đủ: <code>docs/ev-lca-methodology-vietnam.md</code> trong <a href="https://github.com/lqtue/environmental-data-hub" target="_blank">lqtue/environmental-data-hub</a></p>
+
 <!-- ==================== WORKFLOW ==================== -->
 <h2 id="workflow">Quy trình làm việc thông thường</h2>
 
 <h3>Trong khi có Bão hoạt động</h3>
-<pre>Thu thập thủ công (trên Colab): notebooks/crawlers.ipynb &rarr; data/river_long.csv, lake.csv, landslide.csv
-                                notebooks/typhoon_analysis.ipynb &rarr; data/storm.geojson
+<pre>Hàng giờ (Tự động): water_export_cli.py     &rarr; data/water_data_full_combined.csv
+                    landslide_export_cli.py  &rarr; data/landslide.csv
                     &rarr; GitHub Actions tạo PR + gửi email thông báo cho team
-Hàng ngày (Tự động): crawlers/*.py &rarr; Ghi đè vào data/
 
-Mỗi 6h (Tự động):   typhoon/jtwc_fetch.py    &rarr; data/jtwc_active.geojson
-                    &rarr; Đẩy lên GitHub, dashboard tự động làm mới
-
-Thủ công:           Tải file KMZ             &rarr; typhoon/kmz_to_geojson.py &rarr; bán kính gió
+Thủ công:           Tải file KMZ từ JTWC     &rarr; kmz_to_geojson.py &rarr; bán kính gió + dự báo
+                    So sánh lịch sử          &rarr; compare_current_storm.py &rarr; phân tích đổ bộ
                     Xin dữ liệu VegaCosmos   &rarr; cập nhật bản đồ floodmap</pre>
 
 <h3>Sau Bão (Bài viết Sau sự kiện)</h3>
-<pre>1. typhoon/fetch_rain.py              &rarr; rain/RainAnomaly.geojson
+<pre>1. fetch_rain.py              &rarr; rain/RainAnomaly.geojson
 2. Tải IBTrACS mới cập nhật   (nếu mùa bão đã kết thúc)
-3. typhoon/process_landfall.py        &rarr; data/typhoon_landfalls.csv
-4. typhoon/compute_province_metrics.py &rarr; data/province_metrics.json
+3. process_landfall.py        &rarr; data/typhoon_landfalls.csv
+4. compute_province_metrics.py &rarr; data/province_metrics.json
 5. Ráp câu chuyện              &rarr; story.json + text.md (dùng cho FloodViz2/2025typhon2)</pre>
 
 <!-- ==================== KNOWN ISSUES ==================== -->
@@ -629,16 +999,16 @@ Thủ công:           Tải file KMZ             &rarr; typhoon/kmz_to_geojson.
 <div class="card warn">
   <div class="card-title">Dữ liệu Bão</div>
   <ul>
-    <li><strong>Trích xuất văn bản JTWC sử dụng Regex.</strong> Nếu định dạng văn bản thay đổi sẽ làm hỏng trình phân tích một cách âm thầm. Hãy kiểm tra lại <code>jtwc_active.geojson</code> vào đầu mỗi mùa bão.</li>
-    <li><strong>Định dạng KMZ rất dễ lỗi.</strong> Việc trích xuất bán kính gió phụ thuộc vào cấu trúc KML của JTWC, và cấu trúc này có thể thay đổi tùy từng cơn bão.</li>
+    <li><strong>Định dạng KMZ rất dễ lỗi.</strong> Việc trích xuất bán kính gió phụ thuộc vào cấu trúc KML của JTWC, và cấu trúc này có thể thay đổi tùy từng cơn bão. Kiểm tra lại đầu ra <code>kmz_to_geojson.py</code> đầu mỗi mùa bão.</li>
     <li><strong>Không có tính năng tự động phát hiện đổ bộ (landfall).</strong> <code>process_landfall.py</code> chạy offline và yêu cầu tải dữ liệu IBTrACS thủ công.</li>
+    <li><strong>Danh sách SID phải cập nhật thủ công.</strong> Tệp <code>LandfallTyphoon.csv</code> cần được cập nhật bằng tay khi có bão mới đổ bộ Việt Nam.</li>
   </ul>
 </div>
 
 <div class="card warn">
   <div class="card-title">Dữ liệu Nước & Hồ chứa</div>
   <ul>
-    <li><strong>File CSV ghi đè.</strong> <code>river_long.csv</code> và <code>lake.csv</code> giờ sẽ chỉ lưu 7 ngày hoặc theo thông số gọi API. Hệ thống cũ sẽ giữ mãi mãi và cần cắt bỏ. Tùy chọn <code>--days</code> trong <code>crawlers/river_water.py</code> xử lý việc này hiện tại.</li>
+    <li><strong>File CSV phình to không giới hạn.</strong> <code>water_data_full_combined.csv</code> tích lũy các dữ liệu đọc hàng giờ mà không tự xóa bớt. Cần phải cắt bỏ dữ liệu cũ hơn 30 ngày ở mỗi mùa lũ.</li>
     <li><strong>Chỉ giám sát 16 trạm và 22 hồ</strong> &mdash; đây là một tập hợp được chọn lọc, không phải toàn bộ mạng lưới quốc gia.</li>
     <li><strong>Endpoint VNDMS rất dễ lỗi.</strong> Yêu cầu phải giả mạo header. Nếu trang web thay đổi cách xác thực, crawler sẽ không hoạt động.</li>
     <li><strong>Thủy Lợi Việt Nam sử dụng HTTP</strong> (không phải HTTPS) &mdash; tiềm ẩn rủi ro bảo mật.</li>
@@ -665,11 +1035,11 @@ Thủ công:           Tải file KMZ             &rarr; typhoon/kmz_to_geojson.
 </div>
 
 <!-- ==================== UNIFIED BACKEND ==================== -->
-<h2 id="upgrade">Hệ thống Backend Thống nhất (Đề xuất Nâng cấp)</h2>
+<h2 id="upgrade">Đề xuất Nâng cấp: Backend Thống nhất</h2>
 
 <div class="card accent">
-  <div class="card-title">Một hệ thống hoàn thiện hơn đã được xây dựng</div>
-  <p>Các công cụ ở trên được xây dựng theo từng phần &mdash; mỗi dự án một câu chuyện. Một hệ thống backend thống nhất sẽ giải quyết sự phân mảnh này:</p>
+  <div class="card-title">Hướng phát triển tiếp theo</div>
+  <p>Các công cụ hiện tại được xây dựng theo từng câu chuyện riêng lẻ &mdash; mỗi dự án một crawler, một file CSV. Một backend thống nhất có thể giải quyết sự phân mảnh này:</p>
   <ul>
     <li><strong>Một cơ sở dữ liệu duy nhất</strong> (PostgreSQL + PostGIS) &mdash; quản lý bão, mực nước, hồ chứa, cảnh báo, đường đi lịch sử, lượng mưa trong cùng một schema</li>
     <li><strong>Mạng lưới trạm đo đầy đủ</strong> &mdash; toàn bộ các trạm VNDMS hiện có, không chỉ giới hạn ở 16 trạm</li>
@@ -678,60 +1048,8 @@ Thủ công:           Tải file KMZ             &rarr; typhoon/kmz_to_geojson.
     <li><strong>Chế độ cảnh báo</strong> &mdash; tự động tăng tần suất cào dữ liệu (crawl) khi một cơn bão đi vào vùng theo dõi của Việt Nam (95&ndash;120&deg;E, 5&ndash;28&deg;N)</li>
     <li><strong>Giải quyết vấn đề phình to CSV</strong> &mdash; sử dụng bảng chuỗi thời gian (time-series) đúng chuẩn với index và chính sách giữ liệu (data retention)</li>
   </ul>
-  <p>Các giao diện frontend hiện tại có thể kết nối với API này với rất ít thay đổi &mdash; chỉ cần thay đổi từ việc đọc file CSV sang việc gọi API.</p>
-  <p>Liên hệ <strong>Tuệ (lqtue@gmail.com)</strong> để được cấp quyền truy cập API &mdash; không cần cài đặt gì thêm, chỉ cần một URL và một khóa đọc (read-only key).</p>
+  <p>Các giao diện frontend hiện tại có thể kết nối với API như vậy với rất ít thay đổi &mdash; chỉ cần chuyển từ đọc file CSV sang gọi API.</p>
 </div>
-
-<!-- ==================== HANDOVER STATUS ==================== -->
-<h2 id="handover-status">Trạng thái Bàn giao</h2>
-
-<table>
-  <tr><th>#</th><th>Hạng mục</th><th>Trạng thái</th><th>Ghi chú</th></tr>
-  <tr>
-    <td>1</td>
-    <td>Bản đồ ranh giới TP.HCM 1975&ndash;nay</td>
-    <td><span class="badge active">Hoàn thành</span></td>
-    <td>Dữ liệu nằm ở <code>spotlightvne/HCMCmap</code></td>
-  </tr>
-  <tr>
-    <td>2</td>
-    <td>Tra cứu danh sách "168 phường xã mới"</td>
-    <td><span class="badge active">Đang mở PR</span></td>
-    <td><a href="https://github.com/spotlightVnE/HCMCmap/pull/1" target="_blank">PR #1</a> &mdash; chờ merge</td>
-  </tr>
-  <tr>
-    <td>3</td>
-    <td>Nền tảng dữ liệu Bão / Thiên tai</td>
-    <td><span class="badge pending">Đang thực hiện</span></td>
-    <td>Code cục bộ chưa được đẩy lên (push); tài liệu phương pháp luận = chính tài liệu này</td>
-  </tr>
-  <tr>
-    <td>4</td>
-    <td>Chất lượng không khí &mdash; "Người Hà Nội hút thuốc thụ động"</td>
-    <td><span class="badge active">Hoàn thành</span></td>
-    <td>Ở repo <code>spotlightvne/HanoiAQ</code> &mdash; hãy kiểm tra lại</td>
-  </tr>
-  <tr>
-    <td>5</td>
-    <td>Xu hướng chuyển đổi xe điện</td>
-    <td><span class="badge missing">Thiếu</span></td>
-    <td>Chưa xác định được vị trí các file dự án đang làm dở</td>
-  </tr>
-</table>
-
-<!-- ==================== CONTACTS ==================== -->
-<h2 id="contacts">Liên hệ & Các Tài khoản</h2>
-
-<h3>Các Tổ chức (Organizations) GitHub</h3>
-<table>
-  <tr><th>Tài khoản</th><th>Mục đích</th></tr>
-  <tr><td><a href="https://github.com/vnexpress-spotlight" target="_blank">vnexpress-spotlight</a></td><td>Tài khoản nhóm: WaterDashboard, FloodViz, FloodViz2, CentralVN.Landslide, MuaMienTrung</td></tr>
-  <tr><td><a href="https://github.com/spotlightvne" target="_blank">spotlightvne</a></td><td>Tài khoản nhóm: HCMCmap, HanoiAQ, AdminName, floodmap, vienphi2035</td></tr>
-  <tr><td><a href="https://github.com/lqtue" target="_blank">lqtue</a></td><td>Tài khoản cá nhân (Tuệ) &mdash; không nên sử dụng nữa sau khi bàn giao</td></tr>
-</table>
-
-<h3>Liên hệ về API / Quyền truy cập Backend</h3>
-<p><strong>Tuệ</strong> &mdash; <a href="mailto:lqtue@gmail.com">lqtue@gmail.com</a></p>
 
 <hr>
 <p style="color: var(--muted); font-size: 12px; text-align: center; margin-top: 24px;">
